@@ -7,6 +7,9 @@
 
 #include "sorting_algos.h"
 
+void replace(int values[], int i, int j);
+int find_min_index(int values[], int n, int start);
+
 void naive_sort(int values[], int n)
 {
     for (int i=0; i<n; i++) {
@@ -53,5 +56,18 @@ void replace(int values[], int i, int j)
 
 void bubble_sort(int values[], int n)
 {
-    
+    int swap_count;
+    do {
+        swap_count = 0;
+        //check each adjacent pair for unorder
+        for (int i=0; i < n-1; i++)
+        {
+            //swap if needed
+            if (values[i] > values[i+1])
+            {
+                replace(values, i, i+1);
+                swap_count++;
+            }
+        }
+    } while (swap_count != 0);
 }

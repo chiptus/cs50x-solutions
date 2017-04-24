@@ -8,6 +8,7 @@
 
 #include "helpers.h"
 #include "sorting_algos.h"
+
 bool naive_search(int value, int values[], int n);
 
 
@@ -35,7 +36,7 @@ bool naive_search(int value, int values[], int n)
 void sort(int values[], int n)
 {
     // TODO: implement an O(n^2) sorting algorithm
-    selection_sort(values, n);
+    bubble_sort(values, n);
 }
 
 
