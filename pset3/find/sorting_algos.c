@@ -71,3 +71,8 @@ void bubble_sort(int values[], int n)
         }
     } while (swap_count != 0);
 }
+
+void insertion_sort(int values[], int n)
+{
+    
+}
