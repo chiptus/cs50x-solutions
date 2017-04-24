@@ -7,9 +7,9 @@
 #include <cs50.h>
 
 #include "helpers.h"
-
-void replace(int values[], int i, int j);
+#include "sorting_algos.h"
 bool naive_search(int value, int values[], int n);
+
 
 /**
  * Returns true if value is in array of n values, else false.
@@ -35,18 +35,7 @@ bool naive_search(int value, int values[], int n)
 void sort(int values[], int n)
 {
     // TODO: implement an O(n^2) sorting algorithm
-    for (int i=0; i<n; i++) {
-        for (int j=i+1; j < n; j++) {
-            if (values[i] > values[j]) {
-                replace(values, i, j);
-            }
-        }
-    }
-    return;
+    selection_sort(values, n);
 }
 
-void replace(int values[], int i, int j) {
-    int temp = values[i];
-    values[i] = values[j];
-    values[j] = temp;
-}
+
