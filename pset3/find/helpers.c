@@ -36,7 +36,7 @@ bool naive_search(int value, int values[], int n)
 void sort(int values[], int n)
 {
     // TODO: implement an O(n^2) sorting algorithm
-    insertion_sort(values, n);
+    merge_sort(values, n);
 }
 
 

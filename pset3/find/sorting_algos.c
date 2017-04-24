@@ -86,10 +86,53 @@ void insertion_sort(int values[], int n)
 void order_next_element(int values[], int n, int i)
 {
     bool flag = values[i-1] > values[i];
-    //values[j..i] > values[swap_index]
+    //values[j+1..i] and values[0..j] are sorted 
     for (int j=i-1; j>=0 && flag; j--)
     {
         replace(values, j, j+1);
         flag = values[j-1] > values[j]; 
     }
+}
+
+void merge_sort_rec(int values[], int n, int start, int end);
+void merge(int values[], int start, int mid, int end);
+int* copy_arr(int values[], int start, int end);
+
+void merge_sort(int values[], int n)
+{
+    merge_sort_rec(values, n, 0, n);
+}
+
+void merge_sort_rec(int values[], int n, int start, int end)
+{
+    if (start > end)
+    {
+        return;
+    }
+    int mid = (start + end) / 2;
+    merge_sort_rec(values, n, start, mid);
+    merge_sort_rec(values, n, mid + 1, end);
+    merge(values, start, mid, end);
+}
+
+void merge(int values[], int start, int mid, int end)
+{
+    //values[start..mid] and values[mid+1..end] are sorted
+    //set i,j to beginning value of left and right arrays
+    int i = start;
+    int j = mid + 1;
+    int left[mid - start +1] = copy_arr(values, start, mid);
+    int right[end-mid] = copy_arr(values, mid+1, end);
+    
+}
+
+int* copy_arr(int values[], int start, int end)
+{
+    int len = end - start + 1;
+    int arr[len];
+    for (int i=0; i < len; i++)
+    {
+        arr[i] = values[start + i];
+    }
+    return arr;
 }
