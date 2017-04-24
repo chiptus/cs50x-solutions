@@ -9,12 +9,18 @@
 #include "helpers.h"
 
 void replace(int values[], int i, int j);
+bool naive_search(int value, int values[], int n);
 
 /**
  * Returns true if value is in array of n values, else false.
  */
  //TODO implementation is O(n)
 bool search(int value, int values[], int n)
+{
+    return naive_search(value, values, n);
+}
+
+bool naive_search(int value, int values[], int n)
 {
     bool found = false;
     for (int i=0; i<n && !found; i++) {
