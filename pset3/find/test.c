@@ -4,14 +4,14 @@
 
 #include "helpers.h"
 
-void test_search(int values[]);
+void test_search(int values[], int len);
 void test_sort(int values[], int len);
 
 void print_array(int arr[], int n);
 
 void return_false_if_n_is_negative(int values[]);
-void return_true_if_val_is_in_values(int values[]);
-void return_false_if_val_is_not_in_values(int values[]);
+void return_true_if_val_is_in_values(int values[], int len);
+void return_false_if_val_is_not_in_values(int values[], int len);
 void sort_from_small_to_large(int values[], int len);
 
 bool small_to_large(int values[], int len);
@@ -21,15 +21,15 @@ void return_false_if_values_is_not_sorted_from_small_to_large();
 
 int main(void) {
     int values[10] = {36623, 9397, 47119, 41858, 5706, 24921, 64447, 60790, 48236, 7389};
-    // test_search(values);
+    test_search(values, 10);
     test_sort(values, 10);
-    // test_small_to_large();
+    test_small_to_large();
 }
 
-void test_search(int values[]){
+void test_search(int values[], int len){
     return_false_if_n_is_negative(values);
-    return_true_if_val_is_in_values(values);
-    return_false_if_val_is_not_in_values(values);
+    return_true_if_val_is_in_values(values, len);
+    return_false_if_val_is_not_in_values(values, len);
 }
 
 void test_sort(int values[], int len){
@@ -45,18 +45,18 @@ void return_false_if_n_is_negative(int values[]) {
     printf("SUCCESS\n");
 }
 
-void return_true_if_val_is_in_values(int values[]){
+void return_true_if_val_is_in_values(int values[], int len){
     printf("\nSearch() should return true when val is in values: ");
-    if (search(9397, values, 10)) {
+    if (search(9397, values, len)) {
         printf("SUCCESS\n");
         return;
     }
     printf("FAIL\n");
 }
 
-void return_false_if_val_is_not_in_values(int values[]){
+void return_false_if_val_is_not_in_values(int values[], int len){
     printf("\nSearch() should return false when val is not in values: ");
-    if (search(10, values, 10)) {
+    if (search(10, values, len)) {
         printf("FAIL\n");
         return;
     }

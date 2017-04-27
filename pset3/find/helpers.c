@@ -10,7 +10,8 @@
 #include "sorting_algos.h"
 
 bool naive_search(int value, int values[], int n);
-
+bool binary_search(int value, int values[], int n);
+bool binary_search_rec(int value, int values[], int n, int start, int end);
 
 /**
  * Returns true if value is in array of n values, else false.
@@ -18,7 +19,7 @@ bool naive_search(int value, int values[], int n);
  //TODO implementation is O(n)
 bool search(int value, int values[], int n)
 {
-    return naive_search(value, values, n);
+    return binary_search(value, values, n);
 }
 
 bool naive_search(int value, int values[], int n)
@@ -28,6 +29,30 @@ bool naive_search(int value, int values[], int n)
         found = values[i] == value;
     }
     return found;
+}
+
+
+bool binary_search(int value, int values[], int n)
+{
+  return binary_search_rec(value, values, n, 0, n);  
+}
+
+bool binary_search_rec(int value, int values[], int n, int start, int end)
+{
+    //length negative
+    if (start >= end) 
+    {
+        return false;
+    }
+    //length 1
+    if (start == end - 1)
+    {
+        return (values[start] == value);
+    }
+    int mid = (start + end) / 2;
+    return binary_search_rec(value, values, n, start, mid) ||
+        binary_search_rec(value, values, n, mid, end);
+    
 }
 
 /**
