@@ -6,7 +6,7 @@
  **/
 #include <stdbool.h>
 #include "sorting_algos.h"
-
+#include <stdio.h>
 void replace(int values[], int i, int j);
 int find_min_index(int values[], int n, int start);
 
@@ -96,43 +96,82 @@ void order_next_element(int values[], int n, int i)
 
 void merge_sort_rec(int values[], int n, int start, int end);
 void merge(int values[], int start, int mid, int end);
-int* copy_arr(int values[], int start, int end);
+void copy_arr(int values[], int newArr[], int start, int len);
 
 void merge_sort(int values[], int n)
 {
     merge_sort_rec(values, n, 0, n);
 }
 
+/*
+    recursive function for merge sort
+    params:
+    values - array to sort
+    n - length of array
+    start - from where to sort
+    end - until where to sort (exclusive)
+*/
 void merge_sort_rec(int values[], int n, int start, int end)
 {
-    if (start > end)
-    {
+    if ((start == end) || (start == end - 1) || (start > end)) {
         return;
     }
     int mid = (start + end) / 2;
     merge_sort_rec(values, n, start, mid);
-    merge_sort_rec(values, n, mid + 1, end);
+    merge_sort_rec(values, n, mid, end);
     merge(values, start, mid, end);
 }
 
+//merge values[start..mid-1] and values[mid..end] so that values[start..end] is sorted
+//values[start..mid-1] and values[mid..end] are sorted
 void merge(int values[], int start, int mid, int end)
 {
-    //values[start..mid] and values[mid+1..end] are sorted
-    //set i,j to beginning value of left and right arrays
-    int i = start;
-    int j = mid + 1;
-    int left[mid - start +1] = copy_arr(values, start, mid);
-    int right[end-mid] = copy_arr(values, mid+1, end);
+    int len_right = end - mid;
+    int len_left = mid - start;
     
+    //copy the parts of the array to new arrays   
+    int left[len_left];
+    copy_arr(values, left, start, len_left);
+    
+    int right[len_right];
+    copy_arr(values, right, mid, len_right);
+    
+    int i = 0;
+    int j = 0;
+    int k = start;
+    //compare both arrays and put from small to large
+    while (i < len_left && j < len_right){
+        if (left[i] < right[j]) {
+            values[k] = left[i];
+            i++;
+        } 
+        else {
+            values[k] = right[j];
+            j++;
+        }
+        k++;
+    }
+    //values[start..k-1] < remaining values in both arrays
+    //one of the arrays was already passed on.
+    
+    //add remaining values from left array
+    while (i < len_left) {
+        values[k] = left[i];
+        i++;
+        k++;
+    }
+    while (j < len_right) {
+        values[k] = right[j];
+        j++;
+        k++;
+    }
 }
 
-int* copy_arr(int values[], int start, int end)
+//copy values[start..start+len-1] into newArr[0..len-1]
+void copy_arr(int values[], int newArr[], int start, int len)
 {
-    int len = end - start + 1;
-    int arr[len];
     for (int i=0; i < len; i++)
     {
-        arr[i] = values[start + i];
+        newArr[i] = values[start + i];
     }
-    return arr;
 }

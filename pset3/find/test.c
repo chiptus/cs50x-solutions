@@ -5,12 +5,14 @@
 #include "helpers.h"
 
 void test_search(int values[]);
-void test_sort(int values[]);
+void test_sort(int values[], int len);
+
+void print_array(int arr[], int n);
 
 void return_false_if_n_is_negative(int values[]);
 void return_true_if_val_is_in_values(int values[]);
 void return_false_if_val_is_not_in_values(int values[]);
-void sort_from_small_to_large(int values[]);
+void sort_from_small_to_large(int values[], int len);
 
 bool small_to_large(int values[], int len);
 void test_small_to_large();
@@ -19,9 +21,9 @@ void return_false_if_values_is_not_sorted_from_small_to_large();
 
 int main(void) {
     int values[10] = {36623, 9397, 47119, 41858, 5706, 24921, 64447, 60790, 48236, 7389};
-    test_search(values);
-    test_sort(values);
-    test_small_to_large();
+    // test_search(values);
+    test_sort(values, 10);
+    // test_small_to_large();
 }
 
 void test_search(int values[]){
@@ -30,8 +32,8 @@ void test_search(int values[]){
     return_false_if_val_is_not_in_values(values);
 }
 
-void test_sort(int values[]){
-    sort_from_small_to_large(values);
+void test_sort(int values[], int len){
+    sort_from_small_to_large(values, len);
 }
 
 void return_false_if_n_is_negative(int values[]) {
@@ -61,14 +63,16 @@ void return_false_if_val_is_not_in_values(int values[]){
     printf("SUCCESS\n");
 }
 
-void sort_from_small_to_large(int values[]) {
+void sort_from_small_to_large(int values[], int len) {
     printf("\nsort() should sort values from small to large: ");
-    sort(values, 10);
-    if (small_to_large(values, 10)) {
+    sort(values, len);
+    if (small_to_large(values, len)) {
         printf("SUCCESS\n");
         return;
     }
-    printf("FAIL\n");
+    printf("FAIL, returned array is: \n");
+    print_array(values, len);
+    printf("\n");
 }
 
 bool small_to_large(int values[], int len) {
@@ -100,4 +104,15 @@ void return_false_if_values_is_not_sorted_from_small_to_large(){
         return;
     }
     printf("SUCCESS\n");
+}
+
+void print_array(int arr[], int n){
+    printf("[");
+    for (int i =0; i < n; i++) {
+        printf("%i", arr[i]);
+        if (i < n -1) {
+            printf(",");
+        }
+    }
+    printf("]");
 }
