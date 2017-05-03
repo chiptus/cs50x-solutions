@@ -1,0 +1,4 @@
+0. The frameworks allows for any n*n board where n is between 3 to 9 (inclusive)
+1. 
+2. TODO
+3. TODO
