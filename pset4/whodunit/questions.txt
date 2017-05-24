@@ -7,7 +7,7 @@
 7.  biBitCount
 8.  fopen will return NULL when it's not successful. If mode is 'r', it will return NULL if the file doesn't exist. 
     In line 32 the mode is 'w' i.e write. It's not stated in the reference why it might returns NULL, but I guess it would happen because of file permission.
-9.  TODO
+9.  the third argument to 'fread' is the number of times to read from the file. we use 1 since we want to read the requested block just once
 10. TODO
 11. TODO
 12. TODO
