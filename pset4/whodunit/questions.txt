@@ -9,5 +9,5 @@
     In line 32 the mode is 'w' i.e write. It's not stated in the reference why it might returns NULL, but I guess it would happen because of file permission.
 9.  the third argument to 'fread' is the number of times to read from the file. we use 1 since we want to read the requested block just once
 10. 3
-11. TODO
-12. TODO
+11. changes the location of the pointer by the supplied offset 
+12. SEEK_CUR is a constant that when supplied as a third argument to fseek, it tells 'fseek' to start counting the offset from the current location of the pointer.
