@@ -156,7 +156,20 @@ void greet(void)
  */
 void init(void)
 {
-    // TODO
+    for (int i=0; i<d; i++)
+    {
+        for (int j=0; j<d; j++)
+        {
+            if (j < d - 1 || i < d - 1){
+                board[i][j] = d*d - (i*d + j + 1);
+            }
+        }
+    }
+    if (d % 2 == 0)
+    {
+        board[d-1][d-2] = 2;
+        board[d-1][d-3] = 1;
+    }
 }
 
 /**
@@ -164,7 +177,27 @@ void init(void)
  */
 void draw(void)
 {
-    // TODO
+    
+    for (int i=0; i<d; i++)
+    {
+        for (int j=0; j<d; j++)
+        {
+            int tile = board[i][j];
+            if (tile < 10)
+            {
+                printf(" ");
+            }
+            if (tile == 0){
+                printf("_ ");
+            }
+            else 
+            {
+                printf("%i ", tile);
+            }
+            
+        }
+        printf("\n\n");
+    }
 }
 
 /**
@@ -173,7 +206,54 @@ void draw(void)
  */
 bool move(int tile)
 {
-    // TODO
+    //find tile
+    bool found = false;
+    int i =0;
+    int j = 0;
+    for (i=0; i<d && !found; i++)
+    {
+        for (j=0; j<d && !found; j++)
+        {
+            found = board[i][j] == tile;
+        }
+    }
+    if (!found) 
+    {
+        return false;
+    }
+    int row = i - 1;
+    int col = j - 1;
+    //check up
+    if (row > 0 && board[row-1][col] == 0)
+    {
+        board[row-1][col] = tile;
+        board[row][col] = 0;
+        return true;
+    }
+    
+    //check down
+    if (row < d - 1 && board[row + 1][col] == 0)
+    {
+        board[row+1][col] = tile;
+        board[row][col] = 0;
+        return true;
+    }
+    
+    //check right
+    if (col < d - 1 && board[row][col + 1] == 0)
+    {
+        board[row][col + 1] = tile;
+        board[row][col] = 0;
+        return true;
+    }
+    
+    //check left
+    if (col > 0 && board[row][col - 1] == 0)
+    {
+        board[row][col - 1] = tile;
+        board[row][col] = 0;
+        return true;
+    }
     return false;
 }
 
@@ -183,6 +263,19 @@ bool move(int tile)
  */
 bool won(void)
 {
-    // TODO
-    return false;
+    bool won = true;
+    int i,j;
+    for (i=0; i<d && won; i++)
+    {
+        for (j=0; j<d && won; j++)
+        {
+            bool won_tile = board[i][j] == i*d + j + 1;
+            if (j == d-1 && i == d-1)
+            {
+                won_tile = board[i][j] == 0;
+            }
+            won = won && won_tile;
+        }
+    }
+    return won;
 }

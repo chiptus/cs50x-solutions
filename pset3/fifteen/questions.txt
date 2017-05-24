@@ -1,4 +1,4 @@
 0. The frameworks allows for any n*n board where n is between 3 to 9 (inclusive)
-1. 
-2. TODO
-3. TODO
+1. The game's board is represneted in a 2D array
+2. the function that is called to greet the player is greet()
+3. I need to implement the funciton: init(), draw(), move(tile), and won()
