@@ -1,0 +1,13 @@
+1.  A library defining new types on integers, that enhance the portability of software
+2.  These integer types are guaranteed to have the same number of bits across all implementations. This allows portability.
+3.  1, 4, 4, 2
+4.  BM
+5.  bfSize is the size in bytes of the bitmap file and biSize is the number of bytes required by BITMAPINFOHEADER
+6.  if biHeight is negative then the bitmap is a top down DIB and its origin is the upper-left corner (DIB - device independnet bitmap)
+7.  biBitCount
+8.  fopen will return NULL when it's not successful. If mode is 'r', it will return NULL if the file doesn't exist. 
+    In line 32 the mode is 'w' i.e write. It's not stated in the reference why it might returns NULL, but I guess it would happen because of file permission.
+9.  TODO
+10. TODO
+11. TODO
+12. TODO
