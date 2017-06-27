@@ -69,12 +69,11 @@ int main(int argc, char *argv[])
     // determine padding for scanlines
     int original_padding = calculate_padding(inbi.biWidth);
     int new_padding = calculate_padding(outbi.biWidth);
-    
+
     // iterate over infile's scanlines
     for (int i = 0, biHeight = abs(inbi.biHeight); i < biHeight; i++)
     {
         // repeat this line n times
-       
         for (int k = 0; k < n; k++)
         {
             // iterate over pixels in scanline
@@ -92,7 +91,7 @@ int main(int argc, char *argv[])
                     fwrite(&triple, sizeof(RGBTRIPLE), 1, output_file);
                 }
             }
-            
+
             long int offset = (inbi.biWidth * sizeof(RGBTRIPLE));
             fseek(input_file, -offset, SEEK_CUR);
             
@@ -101,11 +100,10 @@ int main(int argc, char *argv[])
                 fputc(0x00, output_file);
             }
         }
-        
+
         // skip over padding, if any
         fseek(input_file, inbi.biWidth * sizeof(RGBTRIPLE) + original_padding, SEEK_CUR);
 
-        
     }
 
     // close infile
@@ -117,7 +115,6 @@ int main(int argc, char *argv[])
     // success
     return 0;
 }
-
 
 
 int calculate_padding(int biWidth)
