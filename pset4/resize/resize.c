@@ -3,9 +3,24 @@
 
 #include "bmp.h"
 
+
+typedef struct FILEDATA
+{
+   FILE* file;
+   BITMAPINFOHEADER bi;
+   BITMAPFILEHEADER bf;
+   int padding;
+} FILEDATA;
+
+
 int calculate_padding(int biWidth);
 BITMAPFILEHEADER resize_bf(BITMAPFILEHEADER bf, BITMAPINFOHEADER new_bi);
 BITMAPINFOHEADER resize_bi(BITMAPINFOHEADER inbi, int n);
+int resize(FILE* input_file, FILE* output_file, int n);
+FILEDATA create_file_meta( FILE* file,   BITMAPINFOHEADER bi, BITMAPFILEHEADER bf,  int padding);
+void process_line(FILEDATA input, FILEDATA output, int n);
+
+
 int main(int argc, char *argv[])
 {
     if (argc != 4)
@@ -41,6 +56,12 @@ int main(int argc, char *argv[])
         return 1;
     }
     
+    return resize(input_file, output_file, n);
+}
+
+
+int resize(FILE* input_file, FILE* output_file, int n)
+{
     // read infile's BITMAPFILEHEADER
     BITMAPFILEHEADER inbf;
     fread(&inbf, sizeof(BITMAPFILEHEADER), 1, input_file);
@@ -56,10 +77,12 @@ int main(int argc, char *argv[])
         fclose(output_file);
         fclose(input_file);
         fprintf(stderr, "Unsupported file format.\n");
-        return 4;
+        return 1;
     }
+    
     BITMAPINFOHEADER outbi = resize_bi(inbi, n);
     BITMAPFILEHEADER outbf = resize_bf(inbf, outbi);
+    
     // write outfile's BITMAPFILEHEADER
     fwrite(&outbf, sizeof(BITMAPFILEHEADER), 1, output_file);
 
@@ -70,40 +93,13 @@ int main(int argc, char *argv[])
     int original_padding = calculate_padding(inbi.biWidth);
     int new_padding = calculate_padding(outbi.biWidth);
 
+    FILEDATA input = create_file_meta(input_file, inbi, inbf, original_padding);
+    FILEDATA output = create_file_meta(output_file, outbi, outbf, new_padding);
+
     // iterate over infile's scanlines
     for (int i = 0, biHeight = abs(inbi.biHeight); i < biHeight; i++)
     {
-        // repeat this line n times
-        for (int k = 0; k < n; k++)
-        {
-            // iterate over pixels in scanline
-            for (int j = 0; j < inbi.biWidth; j++)
-            {
-                // temporary storage
-                RGBTRIPLE triple;
-                // read RGB triple from infile
-                fread(&triple, sizeof(RGBTRIPLE), 1, input_file);
-                
-                //repeat this pixel n times
-                for (int l = 0; l < n; l++)
-                {
-                    // write RGB triple to outfile
-                    fwrite(&triple, sizeof(RGBTRIPLE), 1, output_file);
-                }
-            }
-
-            long int offset = (inbi.biWidth * sizeof(RGBTRIPLE));
-            fseek(input_file, -offset, SEEK_CUR);
-            
-            for (int m = 0; m < new_padding; m++)
-            {
-                fputc(0x00, output_file);
-            }
-        }
-
-        // skip over padding, if any
-        fseek(input_file, inbi.biWidth * sizeof(RGBTRIPLE) + original_padding, SEEK_CUR);
-
+        process_line(input, output, n);
     }
 
     // close infile
@@ -116,6 +112,50 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+FILEDATA create_file_meta( FILE* file,   BITMAPINFOHEADER bi, BITMAPFILEHEADER bf,  int padding)
+{
+    FILEDATA file_meta;
+    file_meta.file = file;
+    file_meta.bi = bi;
+    file_meta.bf = bf;
+    file_meta.padding = padding;
+    return file_meta;
+}
+
+void process_line(FILEDATA input, FILEDATA output, int n)
+{
+    // repeat this line n times
+    for (int k = 0; k < n; k++)
+    {
+        // iterate over pixels in scanline
+        for (int j = 0; j < input.bi.biWidth; j++)
+        {
+            // temporary storage
+            RGBTRIPLE triple;
+            // read RGB triple from infile
+            fread(&triple, sizeof(RGBTRIPLE), 1, input.file);
+            
+            //repeat this pixel n times
+            for (int l = 0; l < n; l++)
+            {
+                // write RGB triple to outfile
+                fwrite(&triple, sizeof(RGBTRIPLE), 1, output.file);
+            }
+        }
+
+        //go to beginning of input file line and to the next line of output
+        long int offset = (input.bi.biWidth * sizeof(RGBTRIPLE));
+        fseek(input.file, -offset, SEEK_CUR);
+        
+        for (int m = 0; m < output.padding; m++)
+        {
+            fputc(0x00, output.file);
+        }
+    }
+
+    // skip over padding, if any
+    fseek(input.file, input.bi.biWidth * sizeof(RGBTRIPLE) + input.padding, SEEK_CUR);
+}
 
 int calculate_padding(int biWidth)
 {
