@@ -19,7 +19,10 @@ BITMAPINFOHEADER resize_bi(BITMAPINFOHEADER inbi, int n);
 int resize(FILE* input_file, FILE* output_file, int n);
 FILEDATA create_file_meta( FILE* file,   BITMAPINFOHEADER bi, BITMAPFILEHEADER bf,  int padding);
 void process_line(FILEDATA input, FILEDATA output, int n);
-
+void process_pixel(FILE* input_file, FILE* output_file, int n);
+void go_to_begining(FILEDATA file);
+void add_padding(FILEDATA file_meta);
+void skip_line(FILEDATA file_meta);
 
 int main(int argc, char *argv[])
 {
@@ -130,31 +133,52 @@ void process_line(FILEDATA input, FILEDATA output, int n)
         // iterate over pixels in scanline
         for (int j = 0; j < input.bi.biWidth; j++)
         {
-            // temporary storage
-            RGBTRIPLE triple;
-            // read RGB triple from infile
-            fread(&triple, sizeof(RGBTRIPLE), 1, input.file);
-            
-            //repeat this pixel n times
-            for (int l = 0; l < n; l++)
-            {
-                // write RGB triple to outfile
-                fwrite(&triple, sizeof(RGBTRIPLE), 1, output.file);
-            }
+            process_pixel(input.file, output.file, n);
         }
 
         //go to beginning of input file line and to the next line of output
-        long int offset = (input.bi.biWidth * sizeof(RGBTRIPLE));
-        fseek(input.file, -offset, SEEK_CUR);
+        go_to_begining(input);
         
-        for (int m = 0; m < output.padding; m++)
-        {
-            fputc(0x00, output.file);
-        }
+        add_padding(output);
     }
 
+    skip_line(input);
+}
+
+void skip_line(FILEDATA file_meta)
+{
     // skip over padding, if any
-    fseek(input.file, input.bi.biWidth * sizeof(RGBTRIPLE) + input.padding, SEEK_CUR);
+    fseek(file_meta.file, file_meta.bi.biWidth * sizeof(RGBTRIPLE) + file_meta.padding, SEEK_CUR);
+}
+
+void add_padding(FILEDATA file_meta)
+{
+    for (int m = 0; m < file_meta.padding; m++)
+    {
+        fputc(0x00, file_meta.file);
+    }
+}
+
+void go_to_begining(FILEDATA file)
+{
+    //go to beginning of input file line and to the next line of output
+    long int offset = (file.bi.biWidth * sizeof(RGBTRIPLE));
+    fseek(file.file, -offset, SEEK_CUR);
+}
+
+void process_pixel(FILE* input_file, FILE* output_file, int n)
+{
+    // temporary storage
+    RGBTRIPLE triple;
+    // read RGB triple from infile
+    fread(&triple, sizeof(RGBTRIPLE), 1, input_file);
+    
+    //repeat this pixel n times
+    for (int l = 0; l < n; l++)
+    {
+        // write RGB triple to outfile
+        fwrite(&triple, sizeof(RGBTRIPLE), 1, output_file);
+    }
 }
 
 int calculate_padding(int biWidth)
