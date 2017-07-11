@@ -15,11 +15,11 @@ typedef struct FILEDATA
 
 int calculate_padding(int biWidth);
 BITMAPFILEHEADER resize_bf(BITMAPFILEHEADER bf, BITMAPINFOHEADER new_bi);
-BITMAPINFOHEADER resize_bi(BITMAPINFOHEADER inbi, int n);
-int resize(FILE* input_file, FILE* output_file, int n);
+BITMAPINFOHEADER resize_bi(BITMAPINFOHEADER inbi, float n);
+int resize(FILE* input_file, FILE* output_file, float n);
 FILEDATA create_file_meta( FILE* file,   BITMAPINFOHEADER bi, BITMAPFILEHEADER bf,  int padding);
-void process_line(FILEDATA input, FILEDATA output, int n);
-void process_pixel(FILE* input_file, FILE* output_file, int n);
+void process_line(FILEDATA input, FILEDATA output, float n);
+void process_pixel(FILE* input_file, FILE* output_file, float n);
 void go_to_begining(FILEDATA file);
 void add_padding(FILEDATA file_meta);
 void skip_line(FILEDATA file_meta);
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
         return 1;
     }
     
-    int n = atoi(argv[1]);
+    float n = atof(argv[1]);
     
     if (n <= 0 || n > 100)
     {
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 }
 
 
-int resize(FILE* input_file, FILE* output_file, int n)
+int resize(FILE* input_file, FILE* output_file, float n)
 {
     // read infile's BITMAPFILEHEADER
     BITMAPFILEHEADER inbf;
@@ -125,7 +125,7 @@ FILEDATA create_file_meta( FILE* file,   BITMAPINFOHEADER bi, BITMAPFILEHEADER b
     return file_meta;
 }
 
-void process_line(FILEDATA input, FILEDATA output, int n)
+void process_line(FILEDATA input, FILEDATA output, float n)
 {
     // repeat this line n times
     for (int k = 0; k < n; k++)
@@ -166,7 +166,7 @@ void go_to_begining(FILEDATA file)
     fseek(file.file, -offset, SEEK_CUR);
 }
 
-void process_pixel(FILE* input_file, FILE* output_file, int n)
+void process_pixel(FILE* input_file, FILE* output_file, float n)
 {
     // temporary storage
     RGBTRIPLE triple;
@@ -197,7 +197,7 @@ BITMAPFILEHEADER resize_bf(BITMAPFILEHEADER bf, BITMAPINFOHEADER new_bi)
     return new_header;
 }
 
-BITMAPINFOHEADER resize_bi(BITMAPINFOHEADER inbi, int n)
+BITMAPINFOHEADER resize_bi(BITMAPINFOHEADER inbi, float n)
 {
     BITMAPINFOHEADER new_header;
     new_header.biSize = inbi.biSize; 
