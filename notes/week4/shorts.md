@@ -33,7 +33,17 @@ Objects of different datatypes (that have a logical connection).
 
 We can make a struct pointer.
 
+## 5 - Defining Custom Datatypes
+`typedef old_type new_type`
 
+for structs:
+```
+typdef struct type 
+{
+    struct def
+}
+type_t
+```
 
 
 
