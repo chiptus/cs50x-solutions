@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "bmp.h"
 
@@ -201,8 +202,8 @@ BITMAPINFOHEADER resize_bi(BITMAPINFOHEADER inbi, float n)
 {
     BITMAPINFOHEADER new_header;
     new_header.biSize = inbi.biSize; 
-    new_header.biWidth = n * inbi.biWidth; 
-    new_header.biHeight = n * inbi.biHeight; 
+    new_header.biWidth = floor(n * inbi.biWidth); 
+    new_header.biHeight = floor(n * inbi.biHeight); 
     new_header.biPlanes = inbi.biPlanes; 
     new_header.biBitCount = inbi.biBitCount; 
     new_header.biCompression = inbi.biCompression; 
