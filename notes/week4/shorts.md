@@ -45,9 +45,12 @@ typdef struct type
 type_t
 ```
 
+## 6 - Recursion
+- base case
+- recursive case
 
 
-## 6 - Call stack
+## 7 - Call stack
 
 Terms:
 - Call Stack - a stack where the function is saved
