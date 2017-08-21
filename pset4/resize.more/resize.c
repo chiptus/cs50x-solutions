@@ -14,6 +14,9 @@ typedef struct FILEDATA
 } FILEDATA;
 
 
+void upscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf, BITMAPINFOHEADER inbi);
+void downscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf, BITMAPINFOHEADER inbi);
+
 int calculate_padding(int biWidth);
 BITMAPFILEHEADER resize_bf(BITMAPFILEHEADER bf, BITMAPINFOHEADER new_bi);
 BITMAPINFOHEADER resize_bi(BITMAPINFOHEADER inbi, float n);
@@ -84,6 +87,24 @@ int resize(FILE* input_file, FILE* output_file, float n)
         return 1;
     }
     
+    if (n >= 1)
+    {
+        upscale(input_file, output_file, n, inbf, inbi);
+    } else {
+        downscale(input_file, output_file, n, inbf, inbi);
+    }
+
+    // close infile
+    fclose(input_file);
+
+    // close outfile
+    fclose(output_file);
+
+    // success
+    return 0;
+}
+
+void upscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf, BITMAPINFOHEADER inbi) {
     BITMAPINFOHEADER outbi = resize_bi(inbi, n);
     BITMAPFILEHEADER outbf = resize_bf(inbf, outbi);
     
@@ -105,15 +126,10 @@ int resize(FILE* input_file, FILE* output_file, float n)
     {
         process_line(input, output, n);
     }
+}
 
-    // close infile
-    fclose(input_file);
-
-    // close outfile
-    fclose(output_file);
-
-    // success
-    return 0;
+void downscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf, BITMAPINFOHEADER inbi) {
+    
 }
 
 FILEDATA create_file_meta( FILE* file,   BITMAPINFOHEADER bi, BITMAPFILEHEADER bf,  int padding)
@@ -128,11 +144,9 @@ FILEDATA create_file_meta( FILE* file,   BITMAPINFOHEADER bi, BITMAPFILEHEADER b
 
 void process_line(FILEDATA input, FILEDATA output, float n)
 {
-    // repeat this line n times
-    for (int k = 0; k < n; k++)
-    {
+    
         // iterate over pixels in scanline
-        for (int j = 0; j < input.bi.biWidth; j++)
+        for (int j = 0; j < output.bi.biWidth; j++)
         {
             process_pixel(input.file, output.file, n);
         }
@@ -141,8 +155,7 @@ void process_line(FILEDATA input, FILEDATA output, float n)
         go_to_begining(input);
         
         add_padding(output);
-    }
-
+    
     skip_line(input);
 }
 
