@@ -1,3 +1,5 @@
+//https://cs50.stackexchange.com/questions/9956/hacker4-resize-cant-resize-when-factor-is-a-decimal-number?newreg=f106bd3f8cde414487831f2787ce3371
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -15,7 +17,7 @@ typedef struct FILEDATA
 
 
 void upscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf, BITMAPINFOHEADER inbi);
-void downscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf, BITMAPINFOHEADER inbi);
+// void downscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf, BITMAPINFOHEADER inbi);
 
 int calculate_padding(int biWidth);
 BITMAPFILEHEADER resize_bf(BITMAPFILEHEADER bf, BITMAPINFOHEADER new_bi);
@@ -91,7 +93,7 @@ int resize(FILE* input_file, FILE* output_file, float n)
     {
         upscale(input_file, output_file, n, inbf, inbi);
     } else {
-        downscale(input_file, output_file, n, inbf, inbi);
+    //    downscale(input_file, output_file, n, inbf, inbi);
     }
 
     // close infile
@@ -105,6 +107,8 @@ int resize(FILE* input_file, FILE* output_file, float n)
 }
 
 void upscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf, BITMAPINFOHEADER inbi) {
+    
+    
     BITMAPINFOHEADER outbi = resize_bi(inbi, n);
     BITMAPFILEHEADER outbf = resize_bf(inbf, outbi);
     
@@ -114,6 +118,10 @@ void upscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf
     // write outfile's BITMAPINFOHEADER
     fwrite(&outbi, sizeof(BITMAPINFOHEADER), 1, output_file);
 
+    float height_ratio = (float)inbi.biHeight / outbi.biHeight;
+    float width_ratio = (float)inbi.biWidth / outbi.biWidth;
+    
+
     // determine padding for scanlines
     int original_padding = calculate_padding(inbi.biWidth);
     int new_padding = calculate_padding(outbi.biWidth);
@@ -121,16 +129,45 @@ void upscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf
     FILEDATA input = create_file_meta(input_file, inbi, inbf, original_padding);
     FILEDATA output = create_file_meta(output_file, outbi, outbf, new_padding);
 
+    // printf("hratiow: %f\n", height_ratio);
+    // printf("wration: %f\n", width_ratio);
+
     // iterate over infile's scanlines
-    for (int i = 0, biHeight = abs(inbi.biHeight); i < biHeight; i++)
+    for (int i = 0, biHeight = abs(outbi.biHeight); i < biHeight; i++)
     {
-        process_line(input, output, n);
+        //calc the line to copy
+        int scanline_index = floor(i * height_ratio);
+        // printf("newline %i, scanline %i\n", i, scanline_index);
+        // go to that line
+        int line_location = sizeof(BITMAPINFOHEADER) + sizeof(BITMAPFILEHEADER) + scanline_index * (inbi.biWidth * sizeof(RGBTRIPLE) + original_padding);
+        fseek(input.file, line_location, SEEK_SET);
+        printf("location of %i is %i, current location: %ld\n", scanline_index, line_location, ftell(input.file));
+        
+        //copy the line into an array
+        RGBTRIPLE* triples = malloc(sizeof(RGBTRIPLE) * inbi.biWidth);
+        for (int j = 0; j < inbi.biWidth; j++) {
+            RGBTRIPLE triple;
+            fread(&triple, sizeof(RGBTRIPLE), 1, input.file);
+            triples[j] = triple;
+        }
+        
+        
+        for (int j = 0; j < outbi.biWidth; j++) {
+            int pixel_index = floor(j * width_ratio);
+            // if (pixel_index < 0 || pixel_index > inbi.biWidth) {
+            //     fprintf(stderr, "Pixel %i is out of bounds: %i", pixel_index, inbi.biWidth);
+            // }
+            // printf("newpixel %i, pixel %i\n", j, pixel_index);
+            fwrite(&triples[pixel_index], sizeof(RGBTRIPLE), 1, output.file);
+        }
+        add_padding(output);
+        
     }
 }
 
-void downscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf, BITMAPINFOHEADER inbi) {
+// void downscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf, BITMAPINFOHEADER inbi) {
     
-}
+// }
 
 FILEDATA create_file_meta( FILE* file,   BITMAPINFOHEADER bi, BITMAPFILEHEADER bf,  int padding)
 {
@@ -145,16 +182,16 @@ FILEDATA create_file_meta( FILE* file,   BITMAPINFOHEADER bi, BITMAPFILEHEADER b
 void process_line(FILEDATA input, FILEDATA output, float n)
 {
     
-        // iterate over pixels in scanline
-        for (int j = 0; j < output.bi.biWidth; j++)
-        {
-            process_pixel(input.file, output.file, n);
-        }
+    // iterate over pixels in scanline
+    for (int j = 0; j < output.bi.biWidth; j++)
+    {
+        process_pixel(input.file, output.file, n);
+    }
 
-        //go to beginning of input file line and to the next line of output
-        go_to_begining(input);
-        
-        add_padding(output);
+    //go to beginning of input file line and to the next line of output
+    go_to_begining(input);
+    
+    add_padding(output);
     
     skip_line(input);
 }
