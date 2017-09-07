@@ -16,19 +16,14 @@ typedef struct FILEDATA
 } FILEDATA;
 
 
-void upscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf, BITMAPINFOHEADER inbi);
-// void downscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf, BITMAPINFOHEADER inbi);
+void do_work(FILEDATA input, FILEDATA output,  float height_ratio, float width_ratio);
 
 int calculate_padding(int biWidth);
 BITMAPFILEHEADER resize_bf(BITMAPFILEHEADER bf, BITMAPINFOHEADER new_bi);
 BITMAPINFOHEADER resize_bi(BITMAPINFOHEADER inbi, float n);
 int resize(FILE* input_file, FILE* output_file, float n);
 FILEDATA create_file_meta( FILE* file,   BITMAPINFOHEADER bi, BITMAPFILEHEADER bf,  int padding);
-void process_line(FILEDATA input, FILEDATA output, float n);
-void process_pixel(FILE* input_file, FILE* output_file, float n);
-void go_to_begining(FILEDATA file);
 void add_padding(FILEDATA file_meta);
-void skip_line(FILEDATA file_meta);
 
 int main(int argc, char *argv[])
 {
@@ -89,26 +84,7 @@ int resize(FILE* input_file, FILE* output_file, float n)
         return 1;
     }
     
-    if (n >= 1)
-    {
-        upscale(input_file, output_file, n, inbf, inbi);
-    } else {
-    //    downscale(input_file, output_file, n, inbf, inbi);
-    }
-
-    // close infile
-    fclose(input_file);
-
-    // close outfile
-    fclose(output_file);
-
-    // success
-    return 0;
-}
-
-void upscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf, BITMAPINFOHEADER inbi) {
-    
-    
+     
     BITMAPINFOHEADER outbi = resize_bi(inbi, n);
     BITMAPFILEHEADER outbf = resize_bf(inbf, outbi);
     
@@ -129,45 +105,46 @@ void upscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf
     FILEDATA input = create_file_meta(input_file, inbi, inbf, original_padding);
     FILEDATA output = create_file_meta(output_file, outbi, outbf, new_padding);
 
-    // printf("hratiow: %f\n", height_ratio);
-    // printf("wration: %f\n", width_ratio);
+     do_work(input, output, height_ratio, width_ratio);
+  
+    // close infile
+    fclose(input_file);
 
-    // iterate over infile's scanlines
-    for (int i = 0, biHeight = abs(outbi.biHeight); i < biHeight; i++)
+    // close outfile
+    fclose(output_file);
+
+    // success
+    return 0;
+}
+
+void do_work(FILEDATA input, FILEDATA output, float height_ratio, float width_ratio) {
+    for (int i = 0, biHeight = abs(output.bi.biHeight); i < biHeight; i++)
     {
         //calc the line to copy
         int scanline_index = floor(i * height_ratio);
-        // printf("newline %i, scanline %i\n", i, scanline_index);
         // go to that line
-        int line_location = sizeof(BITMAPINFOHEADER) + sizeof(BITMAPFILEHEADER) + scanline_index * (inbi.biWidth * sizeof(RGBTRIPLE) + original_padding);
+        int line_location = sizeof(BITMAPINFOHEADER) + sizeof(BITMAPFILEHEADER) + scanline_index * (input.bi.biWidth * sizeof(RGBTRIPLE) + input.padding);
         fseek(input.file, line_location, SEEK_SET);
-        printf("location of %i is %i, current location: %ld\n", scanline_index, line_location, ftell(input.file));
         
         //copy the line into an array
-        RGBTRIPLE* triples = malloc(sizeof(RGBTRIPLE) * inbi.biWidth);
-        for (int j = 0; j < inbi.biWidth; j++) {
+        RGBTRIPLE* triples = malloc(sizeof(RGBTRIPLE) * input.bi.biWidth);
+        for (int j = 0; j < input.bi.biWidth; j++) {
             RGBTRIPLE triple;
             fread(&triple, sizeof(RGBTRIPLE), 1, input.file);
             triples[j] = triple;
         }
         
         
-        for (int j = 0; j < outbi.biWidth; j++) {
+        for (int j = 0; j < output.bi.biWidth; j++) {
             int pixel_index = floor(j * width_ratio);
-            // if (pixel_index < 0 || pixel_index > inbi.biWidth) {
-            //     fprintf(stderr, "Pixel %i is out of bounds: %i", pixel_index, inbi.biWidth);
-            // }
-            // printf("newpixel %i, pixel %i\n", j, pixel_index);
             fwrite(&triples[pixel_index], sizeof(RGBTRIPLE), 1, output.file);
         }
+        free(triples);
         add_padding(output);
         
     }
 }
 
-// void downscale(FILE* input_file, FILE* output_file, float n, BITMAPFILEHEADER inbf, BITMAPINFOHEADER inbi) {
-    
-// }
 
 FILEDATA create_file_meta( FILE* file,   BITMAPINFOHEADER bi, BITMAPFILEHEADER bf,  int padding)
 {
@@ -179,28 +156,8 @@ FILEDATA create_file_meta( FILE* file,   BITMAPINFOHEADER bi, BITMAPFILEHEADER b
     return file_meta;
 }
 
-void process_line(FILEDATA input, FILEDATA output, float n)
-{
-    
-    // iterate over pixels in scanline
-    for (int j = 0; j < output.bi.biWidth; j++)
-    {
-        process_pixel(input.file, output.file, n);
-    }
 
-    //go to beginning of input file line and to the next line of output
-    go_to_begining(input);
-    
-    add_padding(output);
-    
-    skip_line(input);
-}
 
-void skip_line(FILEDATA file_meta)
-{
-    // skip over padding, if any
-    fseek(file_meta.file, file_meta.bi.biWidth * sizeof(RGBTRIPLE) + file_meta.padding, SEEK_CUR);
-}
 
 void add_padding(FILEDATA file_meta)
 {
@@ -210,27 +167,8 @@ void add_padding(FILEDATA file_meta)
     }
 }
 
-void go_to_begining(FILEDATA file)
-{
-    //go to beginning of input file line and to the next line of output
-    long int offset = (file.bi.biWidth * sizeof(RGBTRIPLE));
-    fseek(file.file, -offset, SEEK_CUR);
-}
 
-void process_pixel(FILE* input_file, FILE* output_file, float n)
-{
-    // temporary storage
-    RGBTRIPLE triple;
-    // read RGB triple from infile
-    fread(&triple, sizeof(RGBTRIPLE), 1, input_file);
-    
-    //repeat this pixel n times
-    for (int l = 0; l < n; l++)
-    {
-        // write RGB triple to outfile
-        fwrite(&triple, sizeof(RGBTRIPLE), 1, output_file);
-    }
-}
+
 
 int calculate_padding(int biWidth)
 {
@@ -253,7 +191,7 @@ BITMAPINFOHEADER resize_bi(BITMAPINFOHEADER inbi, float n)
     BITMAPINFOHEADER new_header;
     new_header.biSize = inbi.biSize; 
     new_header.biWidth = floor(n * inbi.biWidth); 
-    new_header.biHeight = floor(n * inbi.biHeight); 
+    new_header.biHeight = ceil(n * inbi.biHeight); 
     new_header.biPlanes = inbi.biPlanes; 
     new_header.biBitCount = inbi.biBitCount; 
     new_header.biCompression = inbi.biCompression; 
