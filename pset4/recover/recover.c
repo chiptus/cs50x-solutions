@@ -1,5 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
+
+typedef uint8_t BYTE;
+
+const int BLOCK_SIZE = sizeof(BYTE) * 512;
 
 void recover(FILE *image);
 
@@ -30,4 +35,18 @@ int main(int argc, char *argv[])
 void recover(FILE *image)
 {
     
+    while (feof(image) == 0)
+    {
+        BYTE* block = malloc(BLOCK_SIZE);
+        fread(&block, BLOCK_SIZE, 1, image);
+        // if (is_jpeg(block))
+        // {
+        //     //start a new file
+        // }
+        // else
+        // {
+        //   // add to old file
+        // }
+        free(block);
+    }
 }
