@@ -27,7 +27,6 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Can't open %s.\n", image);
         return 2;
     }
-    
     recover(file);
     fclose(file);
     return 0;
@@ -36,21 +35,30 @@ int main(int argc, char *argv[])
 
 void recover(FILE *image)
 {
-    
+    FILE * output = NULL;
+    int file_count = 0;
     while (feof(image) == 0)
     {
         BYTE* block = malloc(BLOCK_SIZE);
         fread(block, BLOCK_SIZE, 1, image);
-        // printf("%ld\n",ftell(image));
         if (is_jpeg(block))
         {
-           printf("block is jpg\n");
+            printf("THIS IS JPEG \n");
+            if (output != NULL) {
+                fclose(output);
+                output = NULL;
+            }
+          char file_name[3];
+          sprintf(file_name,"%03i.jpg",file_count);
+          output = fopen(file_name, "w+");
         }
-        else
-        {
-        //   printf("block isn't jpg");
+        if (output != NULL) {
+            fwrite(&block, BLOCK_SIZE, 1, output);
         }
         free(block);
+    }
+    if (output != NULL){
+        fclose(output);
     }
 }
 
