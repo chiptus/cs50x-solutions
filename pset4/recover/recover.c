@@ -37,25 +37,26 @@ void recover(FILE *image)
 {
     FILE * output = NULL;
     int file_count = 0;
-    while (feof(image) == 0)
+    while (1)
     {
-        BYTE* block = malloc(BLOCK_SIZE);
-        fread(block, BLOCK_SIZE, 1, image);
+        BYTE block[BLOCK_SIZE];
+        fread(&block, BLOCK_SIZE, 1, image);
+        if (feof(image) != 0) {
+            break;
+        }
         if (is_jpeg(block))
         {
-            printf("THIS IS JPEG \n");
             if (output != NULL) {
                 fclose(output);
                 output = NULL;
             }
           char file_name[3];
-          sprintf(file_name,"%03i.jpg",file_count);
+          sprintf(file_name,"%03i.jpg",file_count++);
           output = fopen(file_name, "w+");
         }
         if (output != NULL) {
             fwrite(&block, BLOCK_SIZE, 1, output);
         }
-        free(block);
     }
     if (output != NULL){
         fclose(output);
