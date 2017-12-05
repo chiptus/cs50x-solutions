@@ -1,7 +1,15 @@
-0.  TODO
-1.  TODO
-2.  TODO
-3.  TODO
-4.  TODO
-5.  TODO
-6.  TODO
+0.  pneumonoultramicroscopicsilicovolcanoconiosis is an invented long word. It means a lung disease cause by inhaling hash
+1.  getrusage will calculate resource usage measures
+2.  16
+3.  Passing a struct by value means copying the value which can cause performance issues - either size or speed.
+  It's mostly recommended to pass struct with a pointer to overcome this issues.
+4.  
+
+Main is reading words from the file in the for loop that is declared in lines 71 to 128.
+It reads the file's characters one at a time.
+If a character is a digit it will skip the following sequence of alphanumeric characters (basically until it gets to a space or a new line)
+If it's an alphabetical character (or an apostrophes), it will append that to the current found word, but if the word is too long (more then the LENGTH const), it will skip it.
+Otherwise - it's not an alphanumeric value, then it's a space or new line and the word is read completely, thus it will check its spelling and start a new word.
+
+5.  I think the using `fscanf` can cause our program to load also words with numbers or other non alphabetical (or apostrophes) inside. In that case we would need to check every character in every word anyway.
+6.  I think the use of const in function parameters is to signal that the parameters won't be changed.
