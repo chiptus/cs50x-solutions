@@ -9,13 +9,11 @@ typedef struct trie_node
 
 typedef struct trie 
 {
-    trie_node head;
+    trie_node* head;
 } trie;
 
-trie init_trie();
+int is_word_in_trie(const trie* trie, char* word);
 
-int is_word_in_trie(const trie trie, char* word);
-
-void insert_word(trie trie, char* word);
+void insert_word(trie* trie, char* word);
 
 
