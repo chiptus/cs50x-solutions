@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdbool.h>
+
 #include "trie.h"
 
 int get_char_index(char c) {
@@ -16,28 +18,28 @@ int get_char_index(char c) {
     return 26;
 }
 
-int is_char_valid(char c) {
+bool is_char_valid(char c) {
     return isalpha(c) || c == '\'';
 }
 
 int main() {
     trie* trie = malloc(sizeof(struct trie)) ;
-    int answer = is_word_in_trie(trie, "walla");
-    printf("trie should be empty: %s\n", answer == 0 ? "suc" : "fail");
+    bool answer = is_word_in_trie(trie, "walla");
+    printf("trie should be empty: %s\n", !answer ? "suc" : "fail");
     insert_word(trie, "newword");
-    int new_word_in = is_word_in_trie(trie, "newword");
-    printf("trie should have newword: %s\n", new_word_in == 1 ? "suc" : "fail");
+    bool new_word_in = is_word_in_trie(trie, "newword");
+    printf("trie should have newword: %s\n", new_word_in ? "suc" : "fail");
     return 0;
 }
 
 
-int is_word_in_trie(const trie* trie, char* word) {
+bool is_word_in_trie(const trie* trie, char* word) {
     if (trie->head == NULL) {
-        return 0;
+        return false;
     }
     trie_node* current = trie->head[get_char_index(word[0])];
     if (current == NULL) {
-        return 0;
+        return false;
     }
     int i = 1;
     int len = strlen(word);
@@ -49,7 +51,7 @@ int is_word_in_trie(const trie* trie, char* word) {
     if (i == len && current != NULL) {
         return current->end;
     }
-    return 0;
+    return false;
 }
 
 void insert_word(trie* trie, char* word) {
@@ -71,5 +73,5 @@ void insert_word(trie* trie, char* word) {
         }
         current_node = current_node->next[char_index];
     }
-    current_node->end = 1;
+    current_node->end = true;
 }
