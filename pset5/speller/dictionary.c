@@ -3,8 +3,13 @@
  */
 
 #include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "dictionary.h"
+#include "trie.h"
+
+trie* dict = NULL;
 
 /**
  * Returns true if word is in dictionary else false.
@@ -21,7 +26,32 @@ bool check(const char *word)
 bool load(const char *dictionary)
 {
     // TODO
-    return false;
+    dict = malloc(sizeof(struct trie));
+    
+    FILE* dictionary_file = fopen(dictionary, "r");
+    
+    if (dictionary_file == NULL) {
+        return false;
+    }
+    char word[LENGTH];
+    char tempChar;
+    int i = 0;
+    while ((tempChar = fgetc(dictionary_file)) != EOF) {
+        // if (i > LENGTH) {
+        //     skip_line(dictionary_file);
+        //     continue;
+        // }
+        if (tempChar  == '\n') {
+            word[i] = '\0';
+            insert_word(dict,word);
+            i = 0;
+            continue;
+        }
+        word[i] = tempChar;
+        i++;
+    }
+    printf("%i\n",is_word_in_trie(dict, "cat"));
+    return true;
 }
 
 /**
