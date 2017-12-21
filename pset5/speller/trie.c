@@ -22,15 +22,15 @@ bool is_char_valid(char c) {
     return isalpha(c) || c == '\'';
 }
 
-int main() {
-    trie* trie = malloc(sizeof(struct trie)) ;
-    bool answer = is_word_in_trie(trie, "walla");
-    printf("trie should be empty: %s\n", !answer ? "suc" : "fail");
-    insert_word(trie, "newword");
-    bool new_word_in = is_word_in_trie(trie, "newword");
-    printf("trie should have newword: %s\n", new_word_in ? "suc" : "fail");
-    return 0;
-}
+// int main() {
+//     trie* trie = malloc(sizeof(struct trie)) ;
+//     bool answer = is_word_in_trie(trie, "walla");
+//     printf("trie should be empty: %s\n", !answer ? "suc" : "fail");
+//     insert_word(trie, "newword");
+//     bool new_word_in = is_word_in_trie(trie, "newword");
+//     printf("trie should have newword: %s\n", new_word_in ? "suc" : "fail");
+//     return 0;
+// }
 
 
 bool is_word_in_trie(const trie* trie, char* word) {
