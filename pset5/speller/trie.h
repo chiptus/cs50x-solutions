@@ -11,8 +11,8 @@ typedef struct trie
     trie_node** head;
 } trie;
 
-bool is_word_in_trie(const trie* trie, char* word);
+bool is_word_in_trie(const trie* trie, const char* word);
 
 void insert_word(trie* trie, char* word);
 
-void unload_trie(trie* trie);
+bool unload_trie(trie* trie);

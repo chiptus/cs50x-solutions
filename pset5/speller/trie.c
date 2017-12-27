@@ -6,6 +6,8 @@
 
 #include "trie.h"
 
+bool unload_node_array(trie_node** node_array);
+
 int get_char_index(char c) {
     int i = (int)c;
     if (isupper(c)) {
@@ -33,7 +35,7 @@ bool is_char_valid(char c) {
 // }
 
 
-bool is_word_in_trie(const trie* trie, char* word) {
+bool is_word_in_trie(const trie* trie, const char* word) {
     if (trie->head == NULL) {
         return false;
     }
@@ -74,4 +76,29 @@ void insert_word(trie* trie, char* word) {
         current_node = current_node->next[char_index];
     }
     current_node->end = true;
+}
+
+bool unload_trie(trie* trie) {
+    if (trie->head == NULL) {
+        return true;
+    }
+    return unload_node_array(trie->head);
+}
+
+bool unload_node_array(trie_node** node_array) {
+    bool unloaded = true;
+    for (int i=0; i<27 && unloaded; i++) {
+        trie_node* current = node_array[i];
+        if (current == NULL || current->next == NULL) {
+            continue;
+        }
+        unloaded = unloaded && unload_node_array(current->next);
+        if (unloaded) {
+            free(current);
+        }
+    }
+    if (unloaded) {
+        free(node_array);
+    }
+    return unloaded;
 }

@@ -10,14 +10,17 @@
 #include "trie.h"
 
 trie* dict = NULL;
+int count = 0;
 
 /**
  * Returns true if word is in dictionary else false.
  */
 bool check(const char *word)
 {
-    // TODO
-    return false;
+    if (dict == NULL) {
+        return false;
+    }
+    return is_word_in_trie(dict, word);
 }
 
 /**
@@ -45,12 +48,12 @@ bool load(const char *dictionary)
             word[i] = '\0';
             insert_word(dict,word);
             i = 0;
+            count++;
             continue;
         }
         word[i] = tempChar;
         i++;
     }
-    printf("%i\n",is_word_in_trie(dict, "cat"));
     return true;
 }
 
@@ -59,8 +62,10 @@ bool load(const char *dictionary)
  */
 unsigned int size(void)
 {
-    // TODO
-    return 0;
+    if (dict == NULL) {
+        return 0;
+    }
+    return count;
 }
 
 /**
@@ -68,6 +73,10 @@ unsigned int size(void)
  */
 bool unload(void)
 {
-    // TODO
-    return false;
+    count = 0;
+    bool unloaded = unload_trie(dict);
+    if (unloaded) {
+        dict = NULL;
+    }
+    return unloaded;
 }
