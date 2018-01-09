@@ -8,6 +8,14 @@
 
 bool unload_node_array(trie_node** node_array);
 
+trie* init_trie() {
+    trie* t = (trie *)malloc(sizeof(struct trie));
+    for (int i=0; i<27;i++) {
+        t->head[i] = NULL;
+    }
+    return t;
+}
+
 int get_char_index(char c) {
     int i = (int)c;
     if (isupper(c)) {
@@ -36,9 +44,6 @@ bool is_char_valid(char c) {
 
 
 bool is_word_in_trie(const trie* trie, const char* word) {
-    if (trie->head == NULL) {
-        return false;
-    }
     trie_node* current = trie->head[get_char_index(word[0])];
     if (current == NULL) {
         return false;
@@ -46,7 +51,7 @@ bool is_word_in_trie(const trie* trie, const char* word) {
     int i = 1;
     int len = strlen(word);
     // walk on the trie nodes following the word characters
-    while (i < len && current != NULL && current->next != NULL) {
+    while (i < len && current != NULL) {
         current = current->next[get_char_index(word[i])];
         i++;
     }
@@ -56,49 +61,51 @@ bool is_word_in_trie(const trie* trie, const char* word) {
     return false;
 }
 
-void insert_word(trie* trie, char* word) {
-    if (trie->head == NULL) {
-        trie->head = malloc(sizeof(trie_node) * 27);
+trie_node* init_node() {
+    trie_node* n = (trie_node*)malloc(sizeof(trie_node));
+    for (int i=0; i<27; i++) {
+        n->next[i] = NULL;
     }
+    n->end=false;
+    return n;
+}
+
+void insert_word(trie* trie, char* word) {
     int len = strlen(word);
     if (trie->head[get_char_index(word[0])] == NULL) {
-        trie->head[get_char_index(word[0])] = malloc(sizeof(trie_node));
+        trie->head[get_char_index(word[0])] = init_node();
     }
     trie_node* current_node = trie->head[get_char_index(word[0])];
     for (int i = 1; i < len; i++) {
+        
         int char_index = get_char_index(word[i]);
-        if (current_node->next == NULL) {
-            current_node->next = malloc(sizeof(trie_node) * 27);
-        }
         if (current_node->next[char_index] == NULL) {
-            current_node->next[char_index] = malloc(sizeof(trie_node));
+            current_node->next[char_index] = init_node();
         }
         current_node = current_node->next[char_index];
     }
     current_node->end = true;
 }
 
-bool unload_trie(trie* trie) {
-    if (trie->head == NULL) {
-        return true;
+bool unload_trie(trie* t) {
+    bool unloaded = unload_node_array(t->head);
+    if (unloaded) {
+        free(t);
     }
-    return unload_node_array(trie->head);
+    return unloaded;
 }
 
-bool unload_node_array(trie_node** node_array) {
+bool unload_node_array(trie_node* node_array[]) {
     bool unloaded = true;
     for (int i=0; i<27 && unloaded; i++) {
         trie_node* current = node_array[i];
-        if (current == NULL || current->next == NULL) {
+        if (current == NULL) {
             continue;
         }
         unloaded = unloaded && unload_node_array(current->next);
         if (unloaded) {
             free(current);
         }
-    }
-    if (unloaded) {
-        free(node_array);
     }
     return unloaded;
 }

@@ -29,7 +29,7 @@ bool check(const char *word)
 bool load(const char *dictionary)
 {
     // TODO
-    dict = malloc(sizeof(struct trie));
+    dict = init_trie();
     
     FILE* dictionary_file = fopen(dictionary, "r");
     
@@ -54,6 +54,9 @@ bool load(const char *dictionary)
         word[i] = tempChar;
         i++;
     }
+    
+    free(dictionary_file);
+    
     return true;
 }
 
