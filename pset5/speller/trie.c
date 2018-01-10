@@ -33,12 +33,13 @@ bool is_char_valid(char c) {
 }
 
 // int main() {
-//     trie* trie = malloc(sizeof(struct trie)) ;
+//     trie* trie = init_trie();
 //     bool answer = is_word_in_trie(trie, "walla");
 //     printf("trie should be empty: %s\n", !answer ? "suc" : "fail");
 //     insert_word(trie, "newword");
 //     bool new_word_in = is_word_in_trie(trie, "newword");
 //     printf("trie should have newword: %s\n", new_word_in ? "suc" : "fail");
+//     unload_trie(trie);
 //     return 0;
 // }
 

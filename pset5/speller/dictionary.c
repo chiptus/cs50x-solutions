@@ -55,7 +55,7 @@ bool load(const char *dictionary)
         i++;
     }
     
-    free(dictionary_file);
+    fclose(dictionary_file);
     
     return true;
 }
