@@ -12,9 +12,11 @@ typedef struct trie
 } trie;
 
 trie* init_trie();
+trie_node* init_node();
+int get_char_index(char c);
 
 bool is_word_in_trie(const trie* trie, const char* word);
 
-void insert_word(trie* trie, char* word);
+void insert_word(trie* trie, char* word, int len);
 
 bool unload_trie(trie* trie);

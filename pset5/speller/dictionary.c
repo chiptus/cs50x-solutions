@@ -28,7 +28,6 @@ bool check(const char *word)
  */
 bool load(const char *dictionary)
 {
-    // TODO
     dict = init_trie();
     
     FILE* dictionary_file = fopen(dictionary, "r");
@@ -37,22 +36,18 @@ bool load(const char *dictionary)
         return false;
     }
     char word[LENGTH];
-    char tempChar;
-    int i = 0;
-    while ((tempChar = fgetc(dictionary_file)) != EOF) {
-        // if (i > LENGTH) {
-        //     skip_line(dictionary_file);
-        //     continue;
-        // }
-        if (tempChar  == '\n') {
-            word[i] = '\0';
-            insert_word(dict,word);
-            i = 0;
+    char c;
+    int word_len = 0;
+    while ((c = fgetc(dictionary_file)) != EOF) {
+        if (c == '\n') { //end of line is end of word
+            word[word_len] = 0;
+            insert_word(dict, word, word_len);
+            word_len = 0;
             count++;
             continue;
         }
-        word[i] = tempChar;
-        i++;
+        word[word_len] = c;
+        word_len++;
     }
     
     fclose(dictionary_file);
@@ -76,9 +71,9 @@ unsigned int size(void)
  */
 bool unload(void)
 {
-    count = 0;
     bool unloaded = unload_trie(dict);
     if (unloaded) {
+        count = 0;
         dict = NULL;
     }
     return unloaded;

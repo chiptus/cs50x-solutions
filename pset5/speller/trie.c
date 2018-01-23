@@ -49,14 +49,14 @@ bool is_word_in_trie(const trie* trie, const char* word) {
     if (current == NULL) {
         return false;
     }
+    
     int i = 1;
-    int len = strlen(word);
     // walk on the trie nodes following the word characters
-    while (i < len && current != NULL) {
+    while (word[i] != 0 && current != NULL) {
         current = current->next[get_char_index(word[i])];
         i++;
     }
-    if (i == len && current != NULL) {
+    if (word[i] == 0 && current != NULL) {
         return current->end;
     }
     return false;
@@ -71,8 +71,7 @@ trie_node* init_node() {
     return n;
 }
 
-void insert_word(trie* trie, char* word) {
-    int len = strlen(word);
+void insert_word(trie* trie, char* word, int len) {
     if (trie->head[get_char_index(word[0])] == NULL) {
         trie->head[get_char_index(word[0])] = init_node();
     }
