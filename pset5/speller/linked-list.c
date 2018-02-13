@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "linked-list.h"
 
@@ -34,6 +35,17 @@ void unload_list(list* l) {
         free(prev);
     }
     free(l);
+}
+ 
+node* find_in_list(list* l, char* value) {
+    node* current = l->head;
+    while (current != NULL) {
+        if (strcmp(current->value, value) == 0) {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
 }
 
 void print_list(list* l) {
