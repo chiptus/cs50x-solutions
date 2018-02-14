@@ -28,7 +28,8 @@ bool is_word_in_table(const hash_table* t, const char* word) {
     if (t->buckets[hash] == NULL) {
         return false;   
     }
-    
+    node* n = find_in_list(t->buckets[hash], word);
+    return n != NULL;
 }
 
 void insert_word(hash_table* t, char* word, int len) {
@@ -41,5 +42,11 @@ void insert_word(hash_table* t, char* word, int len) {
 }
 
 bool unload_table(hash_table* t) {
-    return false;
+    for (int i=0; i<HASH_TABLE_SIZE; i++) {
+        if (t->buckets[i] != NULL) {
+            unload_list(t->buckets[i]);
+        }
+    }
+    free(t);
+    return true;
 }

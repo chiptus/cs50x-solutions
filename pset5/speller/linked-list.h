@@ -13,14 +13,14 @@ typedef struct node {
 
 list* init_list();
 
-node* init_node(char* value);
+node* init_node(const char* value);
 
-void insert_to_top(list* l, char* value);
+void insert_to_top(list* l, const char* value);
 
 void unload_list(list* l);
 
 void print_list(list* l);
 
-node* find_in_list(list* l, char* value);
+node* find_in_list(list* l, const char* value);
 
 #endif
