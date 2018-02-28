@@ -31,4 +31,6 @@ unsigned int size(void);
  */
 bool unload(void);
 
+void print_dict();
+
 #endif // DICTIONARY_H

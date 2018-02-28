@@ -5,7 +5,7 @@
 
 #include "linked-list.h"
 
-static const int HASH_TABLE_SIZE = 10^5;
+static const int HASH_TABLE_SIZE = 100000;
 
 typedef struct hash_table {
     list* buckets[HASH_TABLE_SIZE];

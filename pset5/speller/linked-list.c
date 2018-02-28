@@ -25,14 +25,18 @@ void insert_to_top(list* l, const char* value) {
     l->count++;
 }
 
+node* unload_node(node* n) {
+    node* next = n->next;
+    n->next = NULL;
+    free(n->value);
+    free(n);
+    return next;
+}
 
 void unload_list(list* l) {
     node* current = l->head;
     while (current != NULL) {
-        node* prev = current;
-        current = current->next;
-        prev->next = NULL;
-        free(prev);
+        current = unload_node(current);
     }
     free(l);
 }

@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 
             // update counter
             words++;
-
+            
             // check word's spelling
             getrusage(RUSAGE_SELF, &before);
             bool misspelled = !check(word);
