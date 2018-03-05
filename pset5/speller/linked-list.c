@@ -51,13 +51,3 @@ node* find_in_list(list* l, const char* value) {
     }
     return NULL;
 }
-
-void print_list(list* l) {
-    node* current = l->head;
-    while (current != NULL) {
-        printf("%s, ", current->value);
-        current = current->next;
-    }
-    printf("\n");
-}
-

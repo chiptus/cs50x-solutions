@@ -84,10 +84,3 @@ bool unload(void) {
     table = NULL;
     return unloaded;
 }
-
-void print_dict() {
-    for (int i=0; i<HASH_TABLE_SIZE; i++) {
-        printf("%i:\n", i);
-        print_list(table->buckets[i]);
-    }
-}
