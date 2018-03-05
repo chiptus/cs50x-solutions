@@ -19,7 +19,7 @@ node* init_node(const char *value)
 }
 
 // Creates a new node that points to the provided node
-node* insert(node* n, const char* value) 
+node* insert(node* n, const char *value) 
 {
     node *new_node = init_node(value);
     new_node->next = n;
@@ -58,7 +58,8 @@ void unload_list(list *l)
 node* find_in_list(list* l, const char *value) 
 {
     node *current = l->head;
-    while (current != NULL) {
+    while (current != NULL) 
+    {
         if (strcmp(current->value, value) == 0) 
         {
             return current;
