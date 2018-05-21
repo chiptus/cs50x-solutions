@@ -12,8 +12,8 @@ def print_pyramid(height):
     """
     Prints the pyramid with `height`
     """
-    for i in range(height):
-        print(create_line(i, height))
+    for i in range(1, height + 1):
+        print(create_line(i, height), end = "\n" if i < height else "")
 
 
 def create_line(line, height):
@@ -33,4 +33,5 @@ def get_height():
             return val
 
 
-main()
+if __name__ == "__main__":
+    main()
