@@ -20,6 +20,8 @@ def create_line(line, height):
     """
     Prints one line of the pyramid
     """
+    if height < line:
+        return ""
     return " " * (height - line) + "#" * (line + 1)
 
 
