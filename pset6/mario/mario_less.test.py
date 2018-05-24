@@ -13,13 +13,13 @@ class TestMarioLessPrintPyramid(unittest.TestCase):
         self.assertEqual(expected, mock_stdout.getvalue())
 
     def test_print_pyramid_with_1_height(self):
-        self.assert_stdout(1, "##")
+        self.assert_stdout(1, "##\n")
 
     def test_print_pyramid_with_0_height(self):
         self.assert_stdout(0, "")
 
     def test_print_pyramid_with_2_height(self):
-        self.assert_stdout(2, " ##\n###")
+        self.assert_stdout(2, " ##\n###\n")
 
 
 class TestMarioLessCreateLine(unittest.TestCase):
