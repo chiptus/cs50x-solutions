@@ -3,7 +3,7 @@ import unittest.mock
 import io
 from random import randint
 
-import mario_less
+import mario as mario_less
 
 
 # class TestMarioLessPrintPyramid(unittest.TestCase):

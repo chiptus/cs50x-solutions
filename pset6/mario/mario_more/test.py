@@ -3,7 +3,7 @@ import unittest.mock
 import io
 from random import randint
 
-import mario_more
+import mario as mario_more
 
 
 # class TestMarioLessPrintPyramid(unittest.TestCase):
@@ -33,7 +33,7 @@ class TestMarioLessPrintPyramid(unittest.TestCase):
         self.assertEqual(create_pyramid(0), "")
 
     def test_print_pyramid_with_2_height(self):
-        self.assertEqual(create_pyramid(2), " #  # \n##  ##")
+        self.assertEqual(create_pyramid(2), " #  #\n##  ##")
 
 
 class TestMarioLessCreateLine(unittest.TestCase):
@@ -41,12 +41,12 @@ class TestMarioLessCreateLine(unittest.TestCase):
         self.assertEqual("######  ######", mario_more.create_line(6, 6))
 
     def test_regular_input(self):
-        self.assertEqual("    ##  ##    ", mario_more.create_line(2, 6))
+        self.assertEqual("    ##  ##", mario_more.create_line(2, 6))
 
     def test_return_string_length(self):
         height = 10
         line = randint(0, 10)
-        self.assertEqual(len(mario_more.create_line(line, height)), height * 2 + 2)
+        self.assertEqual(len(mario_more.create_line(line, height)), height + line + 2)
 
 
 if __name__ == '__main__':
