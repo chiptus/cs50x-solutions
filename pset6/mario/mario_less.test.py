@@ -24,6 +24,7 @@ import mario_less
 def create_pyramid(height):
     return mario_less.create_pyramid(height, mario_less.create_line)
 
+
 class TestMarioLessPrintPyramid(unittest.TestCase):
     def test_print_pyramid_with_1_height(self):
         self.assertEqual(create_pyramid(1), "##")

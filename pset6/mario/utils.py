@@ -9,3 +9,10 @@ def get_height():
         val = get_int("Height: ")
         if 0 <= val <= 23:
             return val
+
+
+def create_pyramid(height, line_gen):
+    """
+    Creates the pyramid with `height`
+    """
+    return "\n".join([line_gen(i + 1, height) for i in range(height)])
