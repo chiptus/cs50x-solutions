@@ -1,27 +1,17 @@
-from utils import get_height
+from utils import get_height, create_pyramid
 
 
 def main():
     """
     Main Method
     """
-    print_pyramid(get_height())
-
-
-def print_pyramid(height):
-    """
-    Prints the pyramid with `height`
-    """
-    for i in range(1, height + 1):
-        print(create_line(i, height))
+    print(create_pyramid(get_height(), create_line))
 
 
 def create_line(line, height):
     """
-    Prints one line of the pyramid
+    Creates one line of the pyramid
     """
-    if height < line:
-        return ""
     return " " * (height - line) + "#" * (line + 1)
 
 
