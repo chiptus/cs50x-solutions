@@ -44,7 +44,7 @@ int calc_amount_of_coins(int input)
 int calc_amount_of_coin(int input, int coin_value)
 {
     int ans = 0;
-     while (input - coin_value >= 0)
+    while (input - coin_value >= 0)
     {
         ans = ans + 1;
         input = input - coin_value;
