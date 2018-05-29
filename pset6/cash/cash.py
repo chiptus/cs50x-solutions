@@ -18,10 +18,13 @@ def get_input():
 
 
 def calc_amount_of_coins(cash):
-    cehts = int(cash*100)
+    cents = int(cash*100)
     coins = 0
     for t in coin_types:
         coins = coins + (cents//t)
-
+        cents = cents % t
+    return coins + cents
+    
+    
 if __name__ == "__main__":
     main()
