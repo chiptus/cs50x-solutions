@@ -5,11 +5,11 @@ from cs50 import get_string
 def main():
     """Main Method"""
     if len(argv) != 2:
-        print("Number of supplied arguments is illegal\n")
+        print("Number of supplied arguments is illegal")
         exit(1)
     is_number, key = is_number_string(argv[1])
     if not is_number:
-        print("Key is not a number\n")
+        print("Key is not a number")
         exit(1)
     plaintext = get_string("plaintext: ")
     ciphertext = encrypt(plaintext, key)
