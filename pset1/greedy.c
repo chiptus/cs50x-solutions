@@ -6,10 +6,9 @@ int get_input(void);
 int calc_amount_of_coins(int input);
 int calc_amount_of_coin(int input, int coin_value);
 
-int main(void) 
+int main(void)
 {
     int input = get_input();
-    
     printf("%i\n", calc_amount_of_coins(input));
 }
 
@@ -31,7 +30,8 @@ int calc_amount_of_coins(int input)
     int coe[4];
     int ans = 0;
     int currentCoin = 0;
-    while (input > 0) {
+    while (input > 0)
+    {
         int num = calc_amount_of_coin(input, coins[currentCoin]);
         input = input - num * coins[currentCoin];
         coe[currentCoin] = num;
