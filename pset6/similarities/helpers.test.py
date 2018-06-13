@@ -30,10 +30,11 @@ class TestUniqueSentences(unittest.TestCase):
 
 class TestUniqueSubstrings(unittest.TestCase):
     def test_returns_set(self):
-        self.assertIsInstance(unique_substrings("",2), set)
+        self.assertIsInstance(unique_substrings("", 2), set)
 
     def test(self):
-        self.assertEqual(unique_substrings("hello",1), set(["h","e","l","o"]))
+        self.assertEqual(unique_substrings("hello", 1),
+                         set(["h", "e", "l", "o"]))
 
 
 if __name__ == "__main__":
