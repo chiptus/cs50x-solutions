@@ -14,6 +14,26 @@ class Operation(Enum):
 
 def distances(a, b):
     """Calculate edit distance from a to b"""
+    # init matrix
+    M = [[(0, None) for _ in range(len(b) + 1)] for __ in range(len(a) + 1)]
+    
+    # init first row
+    M[0][1:] = [(i, Operation.DELETED) for i in range(1, len(b) + 1)]
+    
+    # init first column
+    for i in range(1, len(a) + 1):
+        M[i][0] = (i, Operation.INSERTED)
+        
+    for i in range(1, len(a) + 1):
+        for j in range(1, len(b) + 1):
+            M[i][j] = calc_edit_distance(i, j, M, a, b)
+    
+    return M
 
-    # TODO
-    return [[]]
+
+def calc_edit_distance(i, j, M, a, b):
+    delete = M[i][j - 1] + 1
+    insert = M[i - 1][i] + 1
+    if a[i] = b[j]:
+        dont = M[i - 1][j - 1]
+    raise "Not implemented"
