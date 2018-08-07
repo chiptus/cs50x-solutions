@@ -2,6 +2,12 @@ import unittest
 
 from helpers import distances
 
+def print_matrix(m):
+    for row in m:
+        for col in row:
+            print(col[0], end="\t")
+        print()
+
 class TestDistance(unittest.TestCase):
     def test_matrix_size_should_be_lenAplus1XlenBplus1(self):
         matrix = distances("hello", "hey")
