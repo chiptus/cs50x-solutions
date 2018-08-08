@@ -9,9 +9,9 @@ void print_empty(int length);
 void print_stars(int length);
 void repeat_char(char c, int times);
 
-int main(void) 
+int main(void)
 {
-    int height = get_height(); 
+    int height = get_height();
     print_pyramid(height);
 }
 
@@ -19,16 +19,17 @@ int get_height()
 {
     printf("Height: ");
     int ans = get_int();
-    while(ans > 23 || ans < 0) {
+    while (ans > 23 || ans < 0)
+    {
         printf("Retry: ");
         ans = get_int();
-    } 
+    }
     return ans;
 }
 
-void print_pyramid(int height) 
+void print_pyramid(int height)
 {
-    for (int i=1; i <= height; i++)
+    for (int i = 1; i <= height; i++)
     {
         print_line(i, height);
     }
@@ -53,7 +54,7 @@ void print_stars(int length)
 
 void repeat_char(char c, int times)
 {
-    for (int i=0; i<times; i++)
+    for (int i = 0; i < times; i++)
     {
         printf("%c", c);
     }
