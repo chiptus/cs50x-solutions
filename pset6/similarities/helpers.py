@@ -24,28 +24,28 @@ def distances(a, b):
     M[0][0] = 0, None
     
     # init first row
-    M[0][1:] = [(i, Operation.DELETED) for i in range(1, len(b) + 1)]
+    M[0][1:] = [(i, Operation.INSERTED) for i in range(1, len(b) + 1)]
     
     # init first column
     for i in range(1, len(a) + 1):
-        M[i][0] = (i, Operation.INSERTED)
+        M[i][0] = (i, Operation.DELETED)
     
-    for i in range(len(a)):
-        for j in range(len(b)):
-            M[i + 1][j + 1] = calc_edit_distance(i, j, M, a, b)
+    for i in range(1, len(a) + 1):
+        for j in range(1, len(b) + 1):
+            M[i][j] = calc_edit_distance(i, j, M, a[i - 1], b[j - 1])
     
     return M
 
 
-def calc_edit_distance(i, j, M, a, b):
-    delete = M[i+1][j][0] + 1
-    insert = M[i][j+1][0] + 1
-    other = M[i][j][0]
+def calc_edit_distance(i, j, M, char_a, char_b):
+    delete = M[i][j - 1][0] + 1
+    insert = M[i - 1][j][0] + 1
+    other = M[i - 1][j - 1][0]
     mini = min(delete, insert, other)
     if mini == delete:
         return (delete, Operation.DELETED)
     if mini == insert:
         return (insert, Operation.INSERTED)
-    if a[i] != b[j]:
+    if char_a != char_b:
         return (other + 1, Operation.SUBSTITUTED)
     return (other, None)
