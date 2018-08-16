@@ -1,1 +1,38 @@
-<!-- TODO -->
+<!--
+Implement templates/matrix.html in such a way that it generates, 
+using Jinja2, a visualization of a matrix returned by distances
+(given some a and b) via an HTML table. In each cell of the table should be only a cost,
+not an operation. Along the lefmost column should be the characters from a, each in its own cell (and row);
+along the topmost row should be the characters from b, each in its cell (and column).
+
+ matrix=matrix, s1=s1, s2=s2, operations=transitions
+-->
+
+<table class="table">
+    <tr >
+        <th> </th>
+        <th> </th>
+        {% for char in s2 %}
+            <th class="header">{{ char }}</th>
+        {% endfor %}
+    </tr>
+    <tr>
+        <td> </td>
+        {% for number in range(1 + s2|count) %}
+            <th class="header">{{ number }}</th>
+        {% endfor %}
+    </tr>
+    {% for row in matrix %}
+    <tr>
+        <th class="header">
+            {% if loop.index > 0 %}
+                {{ s1[loop.index - 1] }}
+            {% endif %}    
+        </th>
+        <th class="header">{{ loop.index }}</th>
+        {% for cell in row %}
+            <td>{{ cell[0] }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
