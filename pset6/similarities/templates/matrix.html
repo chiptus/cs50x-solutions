@@ -12,12 +12,14 @@ along the topmost row should be the characters from b, each in its cell (and col
     <tr >
         <th> </th>
         <th> </th>
+        <th> </th>
         {% for char in s2 %}
             <th class="header">{{ char }}</th>
         {% endfor %}
     </tr>
     <tr>
-        <td> </td>
+        <th> </th>
+        <th> </th>
         {% for number in range(1 + s2|count) %}
             <th class="header">{{ number }}</th>
         {% endfor %}
@@ -25,11 +27,11 @@ along the topmost row should be the characters from b, each in its cell (and col
     {% for row in matrix %}
     <tr>
         <th class="header">
-            {% if loop.index > 0 %}
-                {{ s1[loop.index - 1] }}
+            {% if loop.index > 1 %}
+                {{ s1[loop.index - 2] }}
             {% endif %}    
         </th>
-        <th class="header">{{ loop.index }}</th>
+        <th class="header">{{ loop.index - 1}}</th>
         {% for cell in row %}
             <td>{{ cell[0] }}</td>
         {% endfor %}
