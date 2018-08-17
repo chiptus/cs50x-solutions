@@ -38,14 +38,7 @@ def distances(a, b):
 
 
 def calc_edit_distance(i, j, M, char_a, char_b):
-    delete = M[i][j - 1][0] + 1
-    insert = M[i - 1][j][0] + 1
-    other = M[i - 1][j - 1][0]
-    mini = min(delete, insert, other)
-    if mini == delete:
-        return (delete, Operation.DELETED)
-    if mini == insert:
-        return (insert, Operation.INSERTED)
-    if char_a != char_b:
-        return (other + 1, Operation.SUBSTITUTED)
-    return (other, None)
+    delete = (M[i][j - 1][0] + 1, Operation.DELETED)
+    insert = M[i - 1][j][0] + 1, Operation.INSERTED
+    other = (M[i - 1][j - 1][0] + (0 if char_a == char_b else 1), Operation.SUBSTITUTED)
+    return min(delete, insert, other, key=lambda x: x[0])
