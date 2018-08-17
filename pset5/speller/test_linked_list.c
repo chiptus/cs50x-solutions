@@ -1,7 +1,18 @@
 #include <stdio.h>
 #include "linked-list.h"
 
-int main() {
+void print_list(list* l) 
+{
+    node* current = l->head;
+    while (current != NULL) {
+        printf("%s, ", current->value);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+int main() 
+{
     list* l = init_list();
     print_list(l);
     l->head = init_node("hello");
