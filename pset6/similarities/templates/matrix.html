@@ -33,7 +33,7 @@ along the topmost row should be the characters from b, each in its cell (and col
         </th>
         <th class="header">{{ loop.index - 1}}</th>
         {% for cell in row %}
-            <td>{{ cell[0] }}</td>
+            <td title="{{ cell[1] }}">{{ cell[0] }}</td>
         {% endfor %}
     </tr>
     {% endfor %}
