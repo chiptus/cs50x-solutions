@@ -6,9 +6,11 @@
 
 {% block main %}
 
-<form action="/quote" method="POST">
-    <input name="symbol" />
-    <button type="submit">Submit</button>
+<form action="/quote" method="POST" class="form-inline justify-content-center">
+    
+    <input name="symbol" class="form-control mb-2 mr-sm-2" placeholder="Symbol"/>
+    
+    <button type="submit" class="btn btn-primary mb-2">Submit</button>
 </form>
 
 {% endblock %}
