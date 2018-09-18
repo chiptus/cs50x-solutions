@@ -59,3 +59,53 @@ def lookup(symbol):
 def usd(value):
     """Format value as USD."""
     return f"${value:,.2f}"
+
+
+def get_user_total_cash(db, user_id):
+    # check if user is able to buy
+    rows = db.execute("SELECT cash FROM users WHERE id = :id",
+                      id=session["user_id"])
+
+    # Ensure user exists
+    if len(rows) != 1:
+        raise Error("User does not exist")
+    
+    return rows[0]["cash"]
+    
+        
+def get_user_details(db, user_id):
+    rows = db.execute("SELECT * FROM users WHERE id = :id",
+                      id=session["user_id"])
+
+    # Ensure user exists
+    if len(rows) != 1:
+        raise Error("User does not exist")
+    
+    return rows[0]
+    
+def get_user_stocks(db, user_id):
+    # get total bought stocks for symbol
+    # get total sold stocks for symbol
+    # lookup current value of the symbols
+    # return the difference
+    
+    stocks_query = """
+            SELECT symbol, SUM(shares) as shares FROM transactions WHERE user_id = :user_id AND type = :type
+           GROUP BY symbol
+           """
+    
+    rows_bought = db.execute(stocks_query, user_id=session["user_id"], type=0)
+    rows_sold = db.execute(stocks_query, user_id=session["user_id"], type=1)
+    
+    dict_bought = {x['symbol']: x['shares'] for x in rows_bought}
+    dict_sold = {x['symbol']: x['shares'] for x in rows_sold}
+    
+    stocks = []
+    # Assumes that there are no negative number of shares
+    for symbol, shares in dict_bought.items():
+        sold_shares = dict_sold.get(symbol, 0)
+        total_shares = shares - sold_shares
+        current_price = lookup(symbol)['price']
+        stocks.append({'symbol': symbol, 'shares': total_shares, 'current_price': current_price, 'total_value': current_price * total_shares})
+        
+    return shares
