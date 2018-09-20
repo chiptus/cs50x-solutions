@@ -7,7 +7,7 @@ from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import apology, login_required, lookup, usd
+from helpers import apology, login_required, lookup, usd, get_user_total_cash, get_user_details, get_user_stocks
 
 # Configure application
 app = Flask(__name__)
@@ -40,14 +40,71 @@ db = SQL("sqlite:///finance.db")
 @login_required
 def index():
     """Show portfolio of stocks"""
-    return apology("TODO")
+    user_id = session["user_id"]
+    # get user data
+    user = get_user_details(db, user_id)
+    # get user stocks (grouped by symbol - sum of bought stocks - sum of sold stocks by symbol)
+    stocks, total_value = get_user_stocks(db, user_id)
+    return render_template("index.html", stocks=stocks, balance=user["cash"], stocks_value=total_value)
 
 
 @app.route("/buy", methods=["GET", "POST"])
 @login_required
 def buy():
     """Buy shares of stock"""
-    return apology("TODO")
+    if request.method == "POST":
+        # get symbol
+        symbol = request.form.get("symbol")
+        
+        # make sure symbol is provided
+        if not symbol:
+            return apology("must provide symbol")
+        
+        # make sure shares is provided and is a positive integer
+        shares = request.form.get("shares")
+        
+        if not shares:
+            return apology("must provide number of shares")
+        
+        try:
+            shares = int(shares)
+        except:
+            return apology("shares must be an integer: " + str(type(shares)))
+            
+        if shares <= 0:
+            return apology("shares must be a positive integer")
+        
+        # lookup symbol's price
+        quote = lookup(symbol)
+        
+        # if doesn't exist render apology
+        if not quote:
+            return apology(f"symbol {symbol} does not exist")
+        
+        user_id = session.get("user_id")
+        
+        # get user amount of cash
+        total_cash = get_user_total_cash(db, user_id)
+        total_price = quote["price"] * shares
+        if total_cash < total_price:
+            return apology("sorry, you don't have enough funds")
+        
+        # add transaction to table
+        db.execute("INSERT INTO transactions (user_id, symbol, price, shares, type) VALUES (:user_id, :symbol, :price, :shares, 0)",
+            user_id = user_id,
+            symbol = symbol,
+            price = total_price,
+            shares = shares
+        )
+        # substract total_price from user's cash
+        db.execute("UPDATE users SET cash = :cash WHERE id = :user_id", 
+            cash = total_cash - total_price,
+            user_id = user_id)
+            
+        # return index
+        return redirect("/")
+    return render_template("buy.html")
+    
 
 
 @app.route("/history")

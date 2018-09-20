@@ -101,11 +101,14 @@ def get_user_stocks(db, user_id):
     dict_sold = {x['symbol']: x['shares'] for x in rows_sold}
     
     stocks = []
+    sum = 0
     # Assumes that there are no negative number of shares
     for symbol, shares in dict_bought.items():
         sold_shares = dict_sold.get(symbol, 0)
         total_shares = shares - sold_shares
         current_price = lookup(symbol)['price']
-        stocks.append({'symbol': symbol, 'shares': total_shares, 'current_price': current_price, 'total_value': current_price * total_shares})
+        total_value = current_price * total_shares
+        sum = sum + total_value
+        stocks.append({'symbol': symbol, 'shares': total_shares, 'current_price': current_price, 'total_value': total_value})
         
-    return shares
+    return stocks, sum

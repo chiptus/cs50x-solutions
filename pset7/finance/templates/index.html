@@ -5,17 +5,27 @@
 {% endblock %}
 
 {% block main %}
-
-<form action="/buy" method="POST" >
-    <div class="form-group">
-        <label for="symbol-input">Symbol</label>
-        <input id="symbol-input" class="form-control" name="symbol"/>
-    </div>
-    <div class="form-group">
-        <label for="shares-input">Shares</label>
-        <input id="shares-input" type="number" class="form-control" name="shares" />
-    </div>
-    <button type="submit">Submit</button>
-</form>
+<div><span>Balance: </span><span>{{balance | round(2)}}</span></div>
+<div><span>Grand Total: </span><span>{{(balance + stocks_value) | round(2) }}</span></div>
+<table class="table">
+    <thead>
+        <tr>
+            <td>Symbol</td>
+            <td>Shares</td>
+            <td>Current Price</td>
+            <td>Total Value</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for stock in stocks %}
+        <tr>
+            <td>{{stock["symbol"]}}</td>
+            <td>{{stock["shares"]}}</td>
+            <td>{{stock["current_price"]}}</td>
+            <td>{{stock["total_value"]}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
 {% endblock %}
