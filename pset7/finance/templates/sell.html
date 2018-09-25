@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Sell
+{% endblock %}
+
+{% block main %}
+
+<form action="/sell" method="POST" >
+    {% if symbols and symbols|length > 0 %}
+    <div class="form-group">
+        <label for="symbol-input">Symbol</label>
+        <select name="symbol">
+        {% for symbol in symbols %}
+            <option value="{{symbol}}">{{symbol}}</option>
+        {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="shares-input">Shares to sell</label>
+        <input id="shares-input" type="number" class="form-control" name="shares" />
+    </div>
+    <button type="submit">Submit</button>
+    {% else %}
+    No stocks to sell
+    {% endif %}
+</form>
+
+{% endblock %}

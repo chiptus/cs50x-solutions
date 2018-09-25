@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+<table class="table">
+    <thead>
+        <tr>
+            <td>Type (bought or sold)</td>
+            <td>Purchase Price</td>
+            <td>Symbol</td>
+            <td>Shares</td>
+            <td>Date</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for stock in stocks %}
+        <tr>
+            <td>{{"Sold" if stock["type"] == 1 else "Bought"}}</td>
+            <td>{{stock["price"] | round(2)}}</td>
+            <td>{{stock["symbol"]}}</td>
+            <td>{{stock["shares"]}}</td>
+            <td>{{stock["timestamp"]}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

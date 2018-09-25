@@ -7,7 +7,9 @@ from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import apology, login_required, lookup, usd, get_user_total_cash, get_user_details, get_user_stocks
+from helpers import apology, login_required, lookup, usd, get_user_total_cash, \
+    get_user_details, get_user_stocks, get_symbols_owned, get_shares_owned
+
 
 # Configure application
 app = Flask(__name__)
@@ -111,7 +113,8 @@ def buy():
 @login_required
 def history():
     """Show history of transactions"""
-    return apology("TODO")
+    stocks = db.execute("SELECT * from transactions WHERE user_id = :user_id", user_id=session["user_id"])
+    return render_template("history.html", stocks=stocks)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -188,8 +191,6 @@ def quote():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
-    if request.method == "GET":
-        return render_template("register.html")
     if request.method == "POST":
         # Ensure username was submitted
         if not request.form.get("username"):
@@ -216,12 +217,64 @@ def register():
         session["user_id"] = user_id
         
         return redirect("/")
+    # on GET
+    return render_template("register.html")
 
 @app.route("/sell", methods=["GET", "POST"])
 @login_required
 def sell():
     """Sell shares of stock"""
-    return apology("TODO")
+    user_id = session["user_id"]
+    if request.method == "POST":
+        
+        symbol = request.form.get("symbol")
+        if not symbol:
+            return apology("Failed to select a stock")
+        
+        shares_owned = get_shares_owned(db, user_id, symbol)
+        
+        if shares_owned <= 0:
+            return apology("You don't own any shares of this stock")
+            
+        shares = request.form.get("shares")
+        
+        if not shares:
+            return apology("must provide number of shares")
+        
+        try:
+            shares = int(shares)
+        except:
+            return apology("shares must be an integer: " + str(type(shares)))
+            
+        if shares <= 0:
+            return apology("shares must be a positive integer")
+            
+        if shares > shares_owned:
+            return apology("You don't own enough shares of this stock")
+        
+        quote = lookup(symbol)
+        
+        if not quote:
+            return apology("Symbol does not exist")
+        
+        total_price = quote["price"] * shares
+        
+        db.execute("INSERT INTO transactions (user_id, symbol, price, shares, type) VALUES (:user_id, :symbol, :price, :shares, 1)",
+            user_id = user_id,
+            symbol = symbol,
+            price = total_price,
+            shares = shares
+        )
+        
+        db.execute("""
+            UPDATE users
+            SET cash = cash + :total_price
+            WHERE id = :user_id
+        """, user_id=user_id, total_price=total_price)
+        
+        return redirect("/")
+        
+    return render_template("sell.html", symbols=get_symbols_owned(db, user_id))
 
 
 def errorhandler(e):

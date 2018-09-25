@@ -94,8 +94,8 @@ def get_user_stocks(db, user_id):
            GROUP BY symbol
            """
     
-    rows_bought = db.execute(stocks_query, user_id=session["user_id"], type=0)
-    rows_sold = db.execute(stocks_query, user_id=session["user_id"], type=1)
+    rows_bought = db.execute(stocks_query, user_id=user_id, type=0)
+    rows_sold = db.execute(stocks_query, user_id=user_id, type=1)
     
     dict_bought = {x['symbol']: x['shares'] for x in rows_bought}
     dict_sold = {x['symbol']: x['shares'] for x in rows_sold}
@@ -106,9 +106,36 @@ def get_user_stocks(db, user_id):
     for symbol, shares in dict_bought.items():
         sold_shares = dict_sold.get(symbol, 0)
         total_shares = shares - sold_shares
+        if total_shares <= 0:
+            continue
         current_price = lookup(symbol)['price']
         total_value = current_price * total_shares
         sum = sum + total_value
         stocks.append({'symbol': symbol, 'shares': total_shares, 'current_price': current_price, 'total_value': total_value})
         
     return stocks, sum
+    
+def get_symbols_owned(db, user_id):
+    stocks,_ = get_user_stocks(db, user_id)
+    return [stock['symbol'] for stock in stocks]
+    
+
+def get_shares_owned(db, user_id, symbol):
+    stocks_query = """
+            SELECT SUM(shares) as shares FROM transactions WHERE user_id = :user_id AND type = :type AND symbol = :symbol
+           """
+    
+    rows_bought = db.execute(stocks_query, user_id=user_id, type=0, symbol=symbol)
+    rows_sold = db.execute(stocks_query, user_id=user_id, type=1, symbol=symbol)
+    
+    print(rows_bought, rows_sold)
+    
+    bought = rows_bought[0]["shares"] if len(rows_bought) > 0 else 0
+    if not bought:
+        bought = 0
+    
+    sold = rows_sold[0]["shares"] if len(rows_sold) > 0 else 0
+    if not sold:
+        sold = 0
+        
+    return bought - sold
