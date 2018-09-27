@@ -1,7 +1,7 @@
 import os
 
 from cs50 import SQL
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, redirect, render_template, request, session, g
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions
@@ -87,7 +87,8 @@ def buy():
         
         # get user amount of cash
         total_cash = get_user_total_cash(db, user_id)
-        total_price = quote["price"] * shares
+        stock_price = quote["price"]
+        total_price = stock_price * shares
         if total_cash < total_price:
             return apology("sorry, you don't have enough funds")
         
@@ -95,7 +96,7 @@ def buy():
         db.execute("INSERT INTO transactions (user_id, symbol, price, shares, type) VALUES (:user_id, :symbol, :price, :shares, 0)",
             user_id = user_id,
             symbol = symbol,
-            price = total_price,
+            price = stock_price,
             shares = shares
         )
         # substract total_price from user's cash
@@ -257,12 +258,13 @@ def sell():
         if not quote:
             return apology("Symbol does not exist")
         
-        total_price = quote["price"] * shares
+        stock_price = quote["price"]
+        total_price = stock_price * shares
         
         db.execute("INSERT INTO transactions (user_id, symbol, price, shares, type) VALUES (:user_id, :symbol, :price, :shares, 1)",
             user_id = user_id,
             symbol = symbol,
-            price = total_price,
+            price = stock_price,
             shares = shares
         )
         
@@ -276,7 +278,22 @@ def sell():
         
     return render_template("sell.html", symbols=get_symbols_owned(db, user_id))
 
-
+@app.before_request
+def get_user_balance():
+    if session.get("user_id") is None and request.endpoint != 'login':
+            return redirect("/login")
+    if request.endpoint == 'login':
+        return None
+    user_id = session["user_id"]
+    # get user data
+    user = get_user_details(db, user_id)
+    # get user stocks (grouped by symbol - sum of bought stocks - sum of sold stocks by symbol)
+    stocks, total_value = get_user_stocks(db, user_id)
+    g.user_balance = user["cash"]
+    g.grand_total = user["cash"] + total_value
+    
+    
+    
 def errorhandler(e):
     """Handle error"""
     return apology(e.name, e.code)
