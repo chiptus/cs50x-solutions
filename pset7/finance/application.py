@@ -18,12 +18,15 @@ app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # Ensure responses aren't cached
+
+
 @app.after_request
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
     return response
+
 
 # Custom filter
 app.jinja_env.filters["usd"] = usd
@@ -57,64 +60,64 @@ def buy():
     if request.method == "POST":
         # get symbol
         symbol = request.form.get("symbol")
-        
+
         # make sure symbol is provided
         if not symbol:
             return apology("must provide symbol")
-        
+
         # make sure shares is provided and is a positive integer
         shares = request.form.get("shares")
-        
+
         if not shares:
             return apology("must provide number of shares")
-        
+
         try:
             shares = int(shares)
         except:
             return apology("shares must be an integer: " + str(type(shares)))
-            
+
         if shares <= 0:
             return apology("shares must be a positive integer")
-        
+
         # lookup symbol's price
         quote = lookup(symbol)
-        
+
         # if doesn't exist render apology
         if not quote:
             return apology(f"symbol {symbol} does not exist")
-        
+
         user_id = session.get("user_id")
-        
+
         # get user amount of cash
         total_cash = get_user_total_cash(db, user_id)
         stock_price = quote["price"]
         total_price = stock_price * shares
         if total_cash < total_price:
             return apology("sorry, you don't have enough funds")
-        
+
         # add transaction to table
         db.execute("INSERT INTO transactions (user_id, symbol, price, shares, type) VALUES (:user_id, :symbol, :price, :shares, 0)",
-            user_id = user_id,
-            symbol = symbol,
-            price = stock_price,
-            shares = shares
-        )
+                   user_id=user_id,
+                   symbol=symbol,
+                   price=stock_price,
+                   shares=shares
+                   )
         # substract total_price from user's cash
-        db.execute("UPDATE users SET cash = :cash WHERE id = :user_id", 
-            cash = total_cash - total_price,
-            user_id = user_id)
-            
+        db.execute("UPDATE users SET cash = :cash WHERE id = :user_id",
+                   cash=total_cash - total_price,
+                   user_id=user_id)
+
         # return index
         return redirect("/")
     return render_template("buy.html")
-    
 
 
 @app.route("/history")
 @login_required
 def history():
     """Show history of transactions"""
-    stocks = db.execute("SELECT * from transactions WHERE user_id = :user_id", user_id=session["user_id"])
+    stocks = db.execute(
+        "SELECT * from transactions WHERE user_id = :user_id", user_id=session["user_id"])
     return render_template("history.html", stocks=stocks)
 
 
@@ -176,18 +179,19 @@ def quote():
         # return apology if missing
         if not symbol:
             return apology("Symbol is required")
-        
+
         # look up for the value of the symbol
-        
+
         quote = lookup(symbol)
         if not quote:
             # return apology if symbol doesn't exist
             return apology(f"Symbol {symbol} does not exist")
-        
+
         # return quoted.html with symbol and value
         return render_template("quoted.html", quote=quote)
-    
+
     return render_template("quote.html")
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -197,29 +201,30 @@ def register():
         if not request.form.get("username"):
             return apology("must provide username", 403)
         username = request.form.get("username")
-        
+
         # Ensure password was submitted
         if not request.form.get("password"):
             return apology("must provide password", 403)
         password = request.form.get("password")
-        
+
         # Ensure confirmation was submitted
         if not request.form.get("password-confirm"):
             return apology("must provide password confirmation", 403)
-        
+
         if password != request.form.get("password-confirm"):
             return apology("passwords do not match", 403)
-            
+
         # Store user into `users`
         user_id = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)",
-            username=username,
-            hash=generate_password_hash(password))
-        
+                             username=username,
+                             hash=generate_password_hash(password))
+
         session["user_id"] = user_id
-        
+
         return redirect("/")
     # on GET
     return render_template("register.html")
+
 
 @app.route("/sell", methods=["GET", "POST"])
 @login_required
@@ -227,61 +232,62 @@ def sell():
     """Sell shares of stock"""
     user_id = session["user_id"]
     if request.method == "POST":
-        
+
         symbol = request.form.get("symbol")
         if not symbol:
             return apology("Failed to select a stock")
-        
+
         shares_owned = get_shares_owned(db, user_id, symbol)
-        
+
         if shares_owned <= 0:
             return apology("You don't own any shares of this stock")
-            
+
         shares = request.form.get("shares")
-        
+
         if not shares:
             return apology("must provide number of shares")
-        
+
         try:
             shares = int(shares)
         except:
             return apology("shares must be an integer: " + str(type(shares)))
-            
+
         if shares <= 0:
             return apology("shares must be a positive integer")
-            
+
         if shares > shares_owned:
             return apology("You don't own enough shares of this stock")
-        
+
         quote = lookup(symbol)
-        
+
         if not quote:
             return apology("Symbol does not exist")
-        
+
         stock_price = quote["price"]
         total_price = stock_price * shares
-        
+
         db.execute("INSERT INTO transactions (user_id, symbol, price, shares, type) VALUES (:user_id, :symbol, :price, :shares, 1)",
-            user_id = user_id,
-            symbol = symbol,
-            price = stock_price,
-            shares = shares
-        )
-        
+                   user_id=user_id,
+                   symbol=symbol,
+                   price=stock_price,
+                   shares=shares
+                   )
+
         db.execute("""
             UPDATE users
             SET cash = cash + :total_price
             WHERE id = :user_id
         """, user_id=user_id, total_price=total_price)
-        
+
         return redirect("/")
-        
+
     return render_template("sell.html", symbols=get_symbols_owned(db, user_id))
+
 
 @app.before_request
 def get_user_balance():
     if session.get("user_id") is None and request.endpoint != 'login':
-            return redirect("/login")
+        return redirect("/login")
     if request.endpoint == 'login':
         return None
     user_id = session["user_id"]
@@ -291,9 +297,8 @@ def get_user_balance():
     stocks, total_value = get_user_stocks(db, user_id)
     g.user_balance = user["cash"]
     g.grand_total = user["cash"] + total_value
-    
-    
-    
+
+
 def errorhandler(e):
     """Handle error"""
     return apology(e.name, e.code)

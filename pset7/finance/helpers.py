@@ -39,7 +39,8 @@ def lookup(symbol):
 
     # Contact API
     try:
-        response = requests.get(f"https://api.iextrading.com/1.0/stock/{urllib.parse.quote_plus(symbol)}/quote")
+        response = requests.get(
+            f"https://api.iextrading.com/1.0/stock/{urllib.parse.quote_plus(symbol)}/quote")
         response.raise_for_status()
     except requests.RequestException:
         return None
@@ -69,10 +70,10 @@ def get_user_total_cash(db, user_id):
     # Ensure user exists
     if len(rows) != 1:
         raise Error("User does not exist")
-    
+
     return rows[0]["cash"]
-    
-        
+
+
 def get_user_details(db, user_id):
     rows = db.execute("SELECT * FROM users WHERE id = :id",
                       id=session["user_id"])
@@ -80,26 +81,27 @@ def get_user_details(db, user_id):
     # Ensure user exists
     if len(rows) != 1:
         raise Error("User does not exist")
-    
+
     return rows[0]
-    
+
+
 def get_user_stocks(db, user_id):
     # get total bought stocks for symbol
     # get total sold stocks for symbol
     # lookup current value of the symbols
     # return the difference
-    
+
     stocks_query = """
             SELECT symbol, SUM(shares) as shares FROM transactions WHERE user_id = :user_id AND type = :type
            GROUP BY symbol
            """
-    
+
     rows_bought = db.execute(stocks_query, user_id=user_id, type=0)
     rows_sold = db.execute(stocks_query, user_id=user_id, type=1)
-    
+
     dict_bought = {x['symbol']: x['shares'] for x in rows_bought}
     dict_sold = {x['symbol']: x['shares'] for x in rows_sold}
-    
+
     stocks = []
     sum = 0
     # Assumes that there are no negative number of shares
@@ -111,31 +113,35 @@ def get_user_stocks(db, user_id):
         current_price = lookup(symbol)['price']
         total_value = current_price * total_shares
         sum = sum + total_value
-        stocks.append({'symbol': symbol, 'shares': total_shares, 'current_price': current_price, 'total_value': total_value})
-        
+        stocks.append({'symbol': symbol, 'shares': total_shares,
+                       'current_price': current_price, 'total_value': total_value})
+
     return stocks, sum
-    
+
+
 def get_symbols_owned(db, user_id):
-    stocks,_ = get_user_stocks(db, user_id)
+    stocks, _ = get_user_stocks(db, user_id)
     return [stock['symbol'] for stock in stocks]
-    
+
 
 def get_shares_owned(db, user_id, symbol):
     stocks_query = """
             SELECT SUM(shares) as shares FROM transactions WHERE user_id = :user_id AND type = :type AND symbol = :symbol
            """
-    
-    rows_bought = db.execute(stocks_query, user_id=user_id, type=0, symbol=symbol)
-    rows_sold = db.execute(stocks_query, user_id=user_id, type=1, symbol=symbol)
-    
+
+    rows_bought = db.execute(
+        stocks_query, user_id=user_id, type=0, symbol=symbol)
+    rows_sold = db.execute(stocks_query, user_id=user_id,
+                           type=1, symbol=symbol)
+
     print(rows_bought, rows_sold)
-    
+
     bought = rows_bought[0]["shares"] if len(rows_bought) > 0 else 0
     if not bought:
         bought = 0
-    
+
     sold = rows_sold[0]["shares"] if len(rows_sold) > 0 else 0
     if not sold:
         sold = 0
-        
+
     return bought - sold
