@@ -199,20 +199,26 @@ def register():
     if request.method == "POST":
         # Ensure username was submitted
         if not request.form.get("username"):
-            return apology("must provide username", 403)
+            return apology("must provide username", 400)
         username = request.form.get("username")
 
         # Ensure password was submitted
         if not request.form.get("password"):
-            return apology("must provide password", 403)
+            return apology("must provide password", 400)
         password = request.form.get("password")
 
         # Ensure confirmation was submitted
-        if not request.form.get("password-confirm"):
-            return apology("must provide password confirmation", 403)
+        if not request.form.get("confirmation"):
+            return apology("must provide password confirmation", 400)
 
-        if password != request.form.get("password-confirm"):
-            return apology("passwords do not match", 403)
+        if password != request.form.get("confirmation"):
+            return apology("passwords do not match", 400)
+
+        # Check if user exists
+        existing_user_query = db.execute("SELECT id FROM users WHERE username = :username", username=username)
+        is_user_exists = len(existing_user_query) > 0
+        if is_user_exists:
+            return apology("User with this username already exists", 400)
 
         # Store user into `users`
         user_id = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)",
@@ -286,17 +292,20 @@ def sell():
 
 @app.before_request
 def get_user_balance():
-    if session.get("user_id") is None and request.endpoint != 'login':
-        return redirect("/login")
-    if request.endpoint == 'login':
+    if request.endpoint == 'login' or request.endpoint == 'register':
         return None
+    if session.get("user_id") is None:
+        return redirect("/login")
+    
     user_id = session["user_id"]
     # get user data
     user = get_user_details(db, user_id)
     # get user stocks (grouped by symbol - sum of bought stocks - sum of sold stocks by symbol)
-    stocks, total_value = get_user_stocks(db, user_id)
-    g.user_balance = user["cash"]
-    g.grand_total = user["cash"] + total_value
+    _, total_value = get_user_stocks(db, user_id)
+    cash = user["cash"] if "cash" in user else 0
+    total_value = total_value if total_value else 0
+    g.user_balance = cash
+    g.grand_total = cash + total_value
 
 
 def errorhandler(e):
