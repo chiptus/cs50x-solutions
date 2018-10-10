@@ -304,8 +304,8 @@ def get_user_balance():
     _, total_value = get_user_stocks(db, user_id)
     cash = user["cash"] if "cash" in user else 0
     total_value = total_value if total_value else 0
-    g.user_balance = cash
-    g.grand_total = cash + total_value
+    g.user_balance = round(cash, 2)
+    g.grand_total = round(cash + total_value)
 
 
 def errorhandler(e):
