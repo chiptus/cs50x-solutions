@@ -188,7 +188,7 @@ def quote():
             return apology(f"Symbol {symbol} does not exist")
 
         # return quoted.html with symbol and value
-        return render_template("quoted.html", quote=quote)
+        return render_template("quoted.html", company=quote['name'], symbol=symbol, price=f"{quote['price']:0.2f}")
 
     return render_template("quote.html")
 
