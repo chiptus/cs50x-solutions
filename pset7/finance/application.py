@@ -211,14 +211,14 @@ def register():
         if not request.form.get("confirmation"):
             return apology("must provide password confirmation", 400)
 
-        if password != request.form.get("confirmation"):
-            return apology("passwords do not match", 400)
-
         # Check if user exists
         existing_user_query = db.execute("SELECT id FROM users WHERE username = :username", username=username)
         is_user_exists = len(existing_user_query) > 0
         if is_user_exists:
             return apology("User with this username already exists", 400)
+
+        if password != request.form.get("confirmation"):
+            return apology("passwords do not match", 400)
 
         # Store user into `users`
         user_id = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)",
