@@ -7,17 +7,17 @@
 {% block main %}
 
 <div class="quoted">
-    <div class="name">
-        <div class="name--label">Company: </div>
-        <div class="name--value">{{ quote["name"] }}</div>
+    <div class="quoted--row name">
+        <span class="quoted--row--label name--label">Company: </span>
+        <span class="quoted--row--value name--value">{{ quote["name"] }}</span>
     </div>
-    <div class="symbol">
-        <div class="symbol--label">Symbol: </div>
-        <div class="symbol--value">{{ quote["symbol"] }}</div>
+    <div class="quoted--row symbol">
+        <span class="quoted--row--label symbol--label">Symbol: </span>
+        <span class="quoted--row--value symbol--value">{{ quote["symbol"] }}</span>
     </div>
-    <div class="value">
-        <div class="value--label">Price: </div>
-        <div class="value--value">{{ quote["price"] }}</div>
+    <div class="quoted--row value">
+        <span class="quoted--row--label value--label">Price: </span>
+        <span class="quoted--row--value value--value">{{ quote["price"] }}</span>
     </div>
 </div>
 

@@ -45,3 +45,16 @@ main img
     /* constrain images on small screens */
     max-width: 100%;
 }
+
+
+/* quoted */
+.quoted {
+  width: 30%;
+  margin: 0 auto;
+}
+
+.quoted .quoted--row {
+    display:flex;
+    justify-content: space-between;
+    margin-bottom: 0.5em;
+}
