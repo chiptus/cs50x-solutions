@@ -5,16 +5,7 @@
 {% endblock %}
 
 {% block main %}
-<div>
-    <div>
-        <span>Balance:</span>
-        <span>{{ balance | two_decimals }}</span>
-    </div>
-    <div>
-        <span>Grand Total:</span>
-        <span>{{ (balance + stocks_value) | two_decimals }}</span>
-    </div>
-</div>
+
 <table class="table">
     <thead>
         <tr>

@@ -50,7 +50,7 @@ def index():
     user = get_user_details(db, user_id)
     # get user stocks (grouped by symbol - sum of bought stocks - sum of sold stocks by symbol)
     stocks, total_value = get_user_stocks(db, user_id)
-    return render_template("index.html", stocks=stocks, balance=user["cash"], stocks_value=total_value)
+    return render_template("index.html", stocks=stocks)
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -107,6 +107,9 @@ def buy():
                    cash=total_cash - total_price,
                    user_id=user_id)
 
+        session['balance'] = session['balance'] - total_price
+        session['stock_balance'] = session['stock_balance'] + total_price
+
         # return index
         return redirect("/")
     return render_template("buy.html", symbol=request.args.get('symbol', default=''))
@@ -148,8 +151,10 @@ def login():
             return apology("invalid username and/or password", 403)
 
         # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
-
+        user = rows[0]
+        session["user_id"] = user["id"]
+        session['balance'] = user["cash"]
+        _, session['stock_balance'] = get_user_stocks(db, user["id"])
         # Redirect user to home page
         return redirect("/")
 
@@ -226,7 +231,10 @@ def register():
                              hash=generate_password_hash(password))
 
         session["user_id"] = user_id
-
+        
+        session['balance'] = 10000
+        session['stock_balance'] = 0
+        
         return redirect("/")
     # on GET
     return render_template("register.html")
@@ -284,6 +292,9 @@ def sell():
             SET cash = cash + :total_price
             WHERE id = :user_id
         """, user_id=user_id, total_price=total_price)
+
+        session['balance'] = session['balance'] + total_price
+        session['stock_balance'] = session['stock_balance'] - total_price
 
         return redirect("/")
 
