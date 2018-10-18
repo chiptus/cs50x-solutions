@@ -134,7 +134,6 @@ def get_shares_owned(db, user_id, symbol):
     rows_sold = db.execute(stocks_query, user_id=user_id,
                            type=1, symbol=symbol)
 
-    print(rows_bought, rows_sold)
 
     bought = rows_bought[0]["shares"] if len(rows_bought) > 0 else 0
     if not bought:
@@ -145,3 +144,6 @@ def get_shares_owned(db, user_id, symbol):
         sold = 0
 
     return bought - sold
+    
+def two_decimals(num):
+    return f'{num:.2f}'

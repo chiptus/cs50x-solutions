@@ -8,7 +8,7 @@ from werkzeug.exceptions import default_exceptions
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import apology, login_required, lookup, usd, get_user_total_cash, \
-    get_user_details, get_user_stocks, get_symbols_owned, get_shares_owned
+    get_user_details, get_user_stocks, get_symbols_owned, get_shares_owned, two_decimals
 
 
 # Configure application
@@ -16,7 +16,7 @@ app = Flask(__name__)
 
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
-
+app.jinja_env.filters['two_decimals'] = two_decimals
 # Ensure responses aren't cached
 
 
@@ -288,25 +288,6 @@ def sell():
         return redirect("/")
 
     return render_template("sell.html", symbols=get_symbols_owned(db, user_id))
-
-
-@app.before_request
-def get_user_balance():
-    if request.endpoint == 'login' or request.endpoint == 'register':
-        return None
-    if session.get("user_id") is None:
-        return redirect("/login")
-    
-    user_id = session["user_id"]
-    # get user data
-    user = get_user_details(db, user_id)
-    # get user stocks (grouped by symbol - sum of bought stocks - sum of sold stocks by symbol)
-    _, total_value = get_user_stocks(db, user_id)
-    cash = user["cash"] if "cash" in user else 0
-    total_value = total_value if total_value else 0
-    g.user_balance = round(cash, 2)
-    g.grand_total = round(cash + total_value)
-
 
 def errorhandler(e):
     """Handle error"""
