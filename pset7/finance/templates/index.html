@@ -33,7 +33,8 @@
             <td>{{stock["current_price"] | two_decimals}}</td>
             <td>{{stock["total_value"] | two_decimals}}</td>
             <td>
-                
+                <a href="/buy?symbol={{stock["symbol"]}}" class="btn" role="button">Buy</button>
+                <a href="/sell?symbol={{stock["symbol"]}}" class="btn" role="button">Sell</button>
             </td>
         </tr>
         {% endfor %}

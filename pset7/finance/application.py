@@ -109,7 +109,7 @@ def buy():
 
         # return index
         return redirect("/")
-    return render_template("buy.html")
+    return render_template("buy.html", symbol=request.args.get('symbol', default=''))
 
 
 @app.route("/history")
@@ -287,7 +287,7 @@ def sell():
 
         return redirect("/")
 
-    return render_template("sell.html", symbols=get_symbols_owned(db, user_id))
+    return render_template("sell.html", symbols=get_symbols_owned(db, user_id), selected_symbol=request.args.get('symbol', default=''))
 
 def errorhandler(e):
     """Handle error"""

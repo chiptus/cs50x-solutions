@@ -10,9 +10,9 @@
     {% if symbols and symbols|length > 0 %}
     <div class="form-group">
         <label for="symbol-input">Symbol</label>
-        <select name="symbol">
+        <select name="symbol" class="form-control">
         {% for symbol in symbols %}
-            <option value="{{symbol}}">{{symbol}}</option>
+            <option value="{{symbol}}" {{'selected' if symbol == selected_symbol else ''}}>{{symbol}}</option>
         {% endfor %}
         </select>
     </div>
