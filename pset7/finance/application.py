@@ -217,7 +217,8 @@ def register():
             return apology("must provide password confirmation", 400)
 
         # Check if user exists
-        existing_user_query = db.execute("SELECT id FROM users WHERE username = :username", username=username)
+        existing_user_query = db.execute(
+            "SELECT id FROM users WHERE username = :username", username=username)
         is_user_exists = len(existing_user_query) > 0
         if is_user_exists:
             return apology("User with this username already exists", 400)
@@ -231,10 +232,10 @@ def register():
                              hash=generate_password_hash(password))
 
         session["user_id"] = user_id
-        
+
         session['balance'] = 10000
         session['stock_balance'] = 0
-        
+
         return redirect("/")
     # on GET
     return render_template("register.html")
@@ -299,6 +300,7 @@ def sell():
         return redirect("/")
 
     return render_template("sell.html", symbols=get_symbols_owned(db, user_id), selected_symbol=request.args.get('symbol', default=''))
+
 
 def errorhandler(e):
     """Handle error"""
