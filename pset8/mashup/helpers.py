@@ -27,3 +27,10 @@ def lookup(geo):
 
     # Return results
     return lookup.cache[geo]
+
+def search_address(db, query): 
+    rows = db.execute("""
+        SELECT * FROM places WHERE rowid in (SELECT rowid FROM places_index WHERE places_index MATCH :q)
+    """, q=query)
+    
+    return rows

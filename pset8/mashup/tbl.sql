@@ -12,3 +12,8 @@ CREATE TABLE places (
     longitude REAL,
     accuracy INTEGER
 )
+
+CREATE VIRTUAL TABLE places_index USING fts4(state_code, state, city, postal_code, tokenize=porter);
+
+INSERT INTO places_index (state_code, state, city, postal_code)
+    SELECT admin_code1 as state_code, admin_name1 as state, place_name as city, postal_code FROM places;

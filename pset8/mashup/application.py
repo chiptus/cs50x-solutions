@@ -3,7 +3,7 @@ import re
 from flask import Flask, jsonify, render_template, request
 
 from cs50 import SQL
-from helpers import lookup
+from helpers import lookup, search_address
 
 # Configure application
 app = Flask(__name__)
@@ -26,21 +26,23 @@ def index():
     """Render map"""
     return render_template("index.html")
 
-
+# GET /articles?geo=
 @app.route("/articles")
 def articles():
     """Look up articles for geo"""
-
-    # TODO
-    return jsonify([])
+    geo = request.args.get('geo')
+    if not geo:
+        return RuntimeError("Missing Geo code")
+    return jsonify(lookup(geo)[:5])
 
 
 @app.route("/search")
 def search():
     """Search for places that match query"""
-
-    # TODO
-    return jsonify([])
+    q = request.args.get('q')
+    if not q:
+        return RuntimeError("Q is missing")
+    return jsonify(search_address(db, q))
 
 
 @app.route("/update")
