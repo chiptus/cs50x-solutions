@@ -105,9 +105,9 @@ function configure()
         source: search,
         templates: {
             suggestion: Handlebars.compile(
-                "<div>" +
-                "TODO" +
-                "</div>"
+                `<div>
+                    {{ city }}, {{ state }}, {{ postal_code }}
+                </div>`
             )
         }
     });
