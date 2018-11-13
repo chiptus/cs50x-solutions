@@ -1,3 +1,4 @@
+/* global google */
 // Google Map
 let map;
 
