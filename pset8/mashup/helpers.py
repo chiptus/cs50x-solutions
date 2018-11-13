@@ -28,9 +28,11 @@ def lookup(geo):
     # Return results
     return lookup.cache[geo]
 
-def search_address(db, query): 
+def search_address(db, query):
     rows = db.execute("""
-        SELECT * FROM places WHERE rowid in (SELECT rowid FROM places_index WHERE places_index MATCH :q)
+        SELECT admin_name1 as state, place_name as city, postal_code, longitude, latitude
+        FROM places
+        WHERE rowid in (SELECT rowid FROM places_index WHERE places_index MATCH :q)
     """, q=query)
-    
+
     return rows
