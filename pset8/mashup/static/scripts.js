@@ -64,7 +64,14 @@ $(document).ready(function() {
 // Add marker for place to map
 function addMarker(place)
 {
-    // TODO
+    new google.maps.Marker({
+        map,
+        position: {
+            lng: place.longitude,
+            lat: place.latitude,
+        },
+        title: `${place.place_name}, ${place.admin_code1}`
+    });
 }
 
 
