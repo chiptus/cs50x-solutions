@@ -64,7 +64,7 @@ $(document).ready(function() {
 // Add marker for place to map
 function addMarker(place)
 {
-    new google.maps.Marker({
+    const marker = new google.maps.Marker({
         map,
         position: {
             lng: place.longitude,
@@ -72,6 +72,9 @@ function addMarker(place)
         },
         title: `${place.place_name}, ${place.admin_code1}`
     });
+    marker.onClickHandler = () => getArticlesAndShow(marker, place);
+    marker.addListener('click', marker.onClickHandler);
+    markers.push(marker);
 }
 
 
@@ -130,8 +133,8 @@ function configure()
     // Re-enable ctrl- and right-clicking (and thus Inspect Element) on Google Map
     // https://chrome.google.com/webstore/detail/allow-right-click/hompjdfbfmmmgflfjdlnkohcplmboaeo?hl=en
     document.addEventListener("contextmenu", function(event) {
-        event.returnValue = true; 
-        event.stopPropagation && event.stopPropagation(); 
+        event.returnValue = true;
+        event.stopPropagation && event.stopPropagation();
         event.cancelBubble && event.cancelBubble();
     }, true);
 
@@ -146,7 +149,11 @@ function configure()
 // Remove markers from map
 function removeMarkers()
 {
-    // TODO
+    markers.forEach(marker => {
+        marker.setMap(null);
+        marker.removeListener('click', maker.onClickHandler);
+    });
+    markers = [];
 }
 
 
@@ -158,12 +165,20 @@ function search(query, syncResults, asyncResults)
         q: query
     };
     $.getJSON("/search", parameters, function(data, textStatus, jqXHR) {
-     
+
         // Call typeahead's callback with search results (i.e., places)
         asyncResults(data);
     });
 }
 
+
+async function getArticlesAndShow(marker, place) {
+    showInfo(marker);
+    const response = await fetch(`/articles?geo=${place.postal_code}`);
+    const results = await response.json();
+    console.log(results.length)
+    showInfo(marker, results.map(result => `<li><a href="${result.url}>${result.title}</a></li>`).join('\n'));
+}
 
 // Show info window at marker with content
 function showInfo(marker, content)
@@ -192,7 +207,7 @@ function showInfo(marker, content)
 
 
 // Update UI's markers
-function update() 
+function update()
 {
     // Get map's bounds
     let bounds = map.getBounds();
