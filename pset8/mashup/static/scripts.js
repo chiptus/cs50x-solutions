@@ -70,10 +70,18 @@ function addMarker(place)
             lng: place.longitude,
             lat: place.latitude,
         },
-        title: `${place.place_name}, ${place.admin_code1}`
+        title: `${place.place_name}, ${place.admin_code1}`,
+        label: {
+            text:`${place.place_name}, ${place.admin_name1}`,
+            fontWeight: 'bold',
+            fontSize:'16px'
+        },
+        icon: {
+            labelOrigin: new google.maps.Point(20,50),
+            url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
+        }
     });
-    marker.onClickHandler = () => getArticlesAndShow(marker, place);
-    marker.addListener('click', marker.onClickHandler);
+    marker.addListener('click', () => getArticlesAndShow(marker, place));
     markers.push(marker);
 }
 
@@ -151,7 +159,6 @@ function removeMarkers()
 {
     markers.forEach(marker => {
         marker.setMap(null);
-        marker.removeListener('click', maker.onClickHandler);
     });
     markers = [];
 }
@@ -176,8 +183,7 @@ async function getArticlesAndShow(marker, place) {
     showInfo(marker);
     const response = await fetch(`/articles?geo=${place.postal_code}`);
     const results = await response.json();
-    console.log(results.length)
-    showInfo(marker, results.map(result => `<li><a href="${result.url}>${result.title}</a></li>`).join('\n'));
+    showInfo(marker, results.map(result => `<li><a href="${result.link}" target="_blank">${result.title}</a></li>`).join('\n'));
 }
 
 // Show info window at marker with content
@@ -197,7 +203,6 @@ function showInfo(marker, content)
 
     // End div
     div += "</div>";
-
     // Set info window's content
     info.setContent(div);
 
