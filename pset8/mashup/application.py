@@ -27,6 +27,8 @@ def index():
     return render_template("index.html")
 
 # GET /articles?geo=
+
+
 @app.route("/articles")
 def articles():
     """Look up articles for geo"""
